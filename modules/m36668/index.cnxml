@@ -1,0 +1,79 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>TI DSP/BIOS LOG Module</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36668</md:content-id>
+  <md:title>TI DSP/BIOS LOG Module</md:title>
+  <md:abstract>This module describes the basics of the TI DSP/BIOS LOG module.</md:abstract>
+  <md:uuid>a7f4cff3-0e41-4bde-bcd2-023557acb4c2</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1164692710767">
+      <title>Introduction</title>
+      <para id="id1164692177335">This module describes the basics of the TI DSP/BIOS LOG module.</para>
+    </section>
+    <section id="id1164692366292">
+      <title>Reading</title>
+      <list id="id1164692376404" list-type="bulleted">
+        <item>SPRU423 TMS320 DSP/BIOS Users Guide: Read the section Event Log Manager (LOG Module)</item>
+      </list>
+    </section>
+    <section id="id1164689651574">
+      <title>LOG Module</title>
+      <para id="id1164689619167">When running a real-time application it is desirable to not interrupt the processing while attempting to monitor or debug code. Printing to the standard I/O is very time consuming on the processor. The LOG module helps reduce this time. Formatting of the display takes place on the host computer rather than on the DSP. Data is stored in real-time to a buffer on the DSP and then during idle time it is transferred to the host computer. On the host computer the print statements are formatted and displayed.</para>
+      <para id="id1164692621222">The main functions used in the LOG module are <code display="inline">LOG_printf</code> and <code display="inline">LOG_printf4</code>. They work very similar to the C <code display="inline">printf</code> function. In order to print using the LOG module a LOG object must be defined. To create a new LOG object open the configuration file and right click on <emphasis>Instrumentation-&gt;LOG</emphasis> and select <emphasis>Insert LOG</emphasis>. This will create a LOG object called <code display="inline">LOG0</code>. The name of the object can be changed. On the properties window for the object the buffer length is in words and sets the length of the buffer. The buffer can be either a circular buffer, which contains the last messages written to the object, or fixed, which contains the first messages written to the buffer. A circular buffer allows messages to be sent continually. Each message writes 4 words of data. The format of the function call is</para>
+      <code id="id1164692085078" display="block">LOG_printf(LOG_Obj *log,String format,arg0,arg1)
+    LOG_printf4(LOG_Obj *log,String format,arg0,arg1,arg2,arg3);
+    
+    </code>
+      <para id="id1164692726637">where the <code display="inline">String format</code> is a usual C <code display="inline">printf</code> format string with the conversion characters given in Table 1.</para>
+      <table id="id1164689441028" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <tbody>
+            <row>
+              <entry>Conversion Character</entry>
+              <entry>Description</entry>
+            </row>
+            <row>
+              <entry>%d </entry>
+              <entry>Signed integer</entry>
+            </row>
+            <row>
+              <entry>%x </entry>
+              <entry>Unsigned hexadecimal integer</entry>
+            </row>
+            <row>
+              <entry>%u</entry>
+              <entry>Unsigned integer</entry>
+            </row>
+            <row>
+              <entry>%o </entry>
+              <entry>Unsigned octal integer</entry>
+            </row>
+            <row>
+              <entry>%s </entry>
+              <entry>Character string. This character can only be used with constant string pointers.</entry>
+            </row>
+            <row>
+              <entry>%r </entry>
+              <entry>Symbol from symbol table</entry>
+            </row>
+            <row>
+              <entry>%p</entry>
+              <entry>pointer</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="id1164692604503">When using objects defined with the configuration tool the code must include definitions of the objects and the header file <code display="inline">log.h</code>. The configuration tool generates a header file that contains the definitions. For instance, the file <code display="inline">log.tcf</code> would generate the file <code display="inline">logcfg.h</code>. If an object called <code display="inline">LOG0</code> was created, then the file would contain</para>
+      <code id="id1164689568528" display="block">extern far LOG_Obj LOG0;
+    </code>
+      <para id="id1164692745812">Include the configuration header file in your code and you won't need to make the definitions yourself. A call the the print function might look like this</para>
+      <code id="id1164692243940" display="block">LOG_printf(&amp;LOG0,"Hello world");
+    </code>
+      <para id="id1164689572484">To view the message log select <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</para>
+    </section>
+  </content>
+</document>

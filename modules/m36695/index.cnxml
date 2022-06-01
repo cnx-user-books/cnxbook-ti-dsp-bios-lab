@@ -1,0 +1,414 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>TSK SEM Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36695</md:content-id>
+  <md:title>TSK SEM Lab</md:title>
+  <md:abstract>The module is a lab assignment to better understand the TI DSP/BIOS TSK and SEM modules.</md:abstract>
+  <md:uuid>50359690-57ee-444d-9bdf-b5ce3de89d6e</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1169787655400">
+      <title>Introduction</title>
+      <para id="id1169789724365">This lab module will help you become familiar with the TI DSP/BIOS TSK module and SEM module.</para>
+    </section>
+    <section id="id1169812353102">
+      <title>Reading</title>
+      <list id="id1169781228886" list-type="bulleted">
+        <item>SPRU423 TMS320 DSP/BIOS Users Guide: Read the sections on Semaphores and Tasks.</item>
+      </list>
+    </section>
+    <section id="id1169781237020">
+      <title>Lab Module Prerequisites</title>
+      <para id="id1169784845437">None</para>
+    </section>
+    <section id="id1169802348331">
+      <title>Laboratory</title>
+      <section id="id1169808895598">
+        <title>Part 1</title>
+        <list id="id1169812165411" list-type="bulleted">
+          <item>In this part we will create two tasks that will have the same priority and will run independent of each other.</item>
+          <item>Follow the procedure in <link document="m36660">Code Composer Studio v4 DSP/BIOS Project</link> to create a new CCS DSP/BIOS project. Name the project <code display="inline">tsklab</code>. Your project should have a DSP/BIOS configuration file named <code display="inline">tsklab.tcf</code>.</item>
+          <item>Create a LOG object by right clicking on Instrumentation-&gt;LOG and selecting Insert LOG. Change the name to <code display="inline">trace</code>. Set its properties to have a length of 128 and be a fixed buffer.</item>
+          <item>Create two TSKs with the following properties</item>
+        </list>
+        <list id="id1169784226166" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 1, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+        </list>
+        <list id="id1169784919247" list-type="bulleted">
+          <item>Create a <code display="inline">main.c</code> file and include a <code display="inline">main</code> function that does nothing.</item>
+          <item>In the<code display="inline"> main.c</code> file make functions for your TSKs, <code display="inline">funTSK0</code> and <code display="inline">funTSK1</code>. Each function should print to the <code display="inline">trace</code> LOG object once at the beginning of the function to indicate that the particular TSK is starting and once at the end of the function to indicate that the particular TSK is ending.</item>
+          <item>Add code to each task that loops 5 times and prints to <code display="inline">trace</code> the task number and the loop number each time through the loop. It should look something like:</item>
+        </list>
+        <code id="id1169780602323" display="block">TSK0 Number 0
+    TSK0 Number 1
+    ...
+    </code>
+        <list id="id1169785026590" list-type="bulleted">
+          <item>The basic structure of <code display="inline">main.c</code> should be:</item>
+        </list>
+        <code id="id1169785570968" display="block">#include &lt;std.h&gt;
+    #include "tsklabcfg.h"
+    
+    void main()
+    {
+    }
+    
+    void funTSK0()
+    {
+    /* code here */
+    }
+    
+    void funTSK1()
+    {
+    /* code here */
+    }
+    </code>
+        <list id="id1169784020994" list-type="bulleted">
+          <item>Start the debug session. </item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1169781358965">
+        <title>Part 2</title>
+        <list id="id1169787046621" list-type="bulleted">
+          <item>In this part we will change the tasks so that they yield to each other within their loops.</item>
+          <item>Have in your system two TSKs with the following properties</item>
+        </list>
+        <list id="id1169797120395" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 1, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+          <item>Each yields to the other in their loop.</item>
+        </list>
+        <list id="id1169805651523" list-type="bulleted">
+          <item>Copy the <code display="inline">main.c</code> file from above to a new file <code display="inline">main2.c</code>. Exclude the <code display="inline">main.c</code> from your project build.</item>
+          <item>Change the code so that the two tasks yield to each other within the loop. Put a print statement before the yield and one after the yield so you will know when the function has completed the loop. Do this for subsequent parts of this lab also.</item>
+          <item>Start the debug session. </item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1169788264685">
+        <title>Part 3</title>
+        <list id="id1169782407604" list-type="bulleted">
+          <item>In this part we will change the tasks so that one is a higher priority than the other. They yield to each other in their loops.</item>
+          <item>Have in your system two TSKs with the following properties</item>
+        </list>
+        <list id="id1169784608825" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 2, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+          <item>Each yields to the other in their loop.</item>
+        </list>
+        <list id="id1169815628317" list-type="bulleted">
+          <item>This part will still be executing <code display="inline">main2.c</code>.</item>
+          <item>Set <code display="inline">TSK0</code> to a higher priority than the other.</item>
+          <item>Start the debug session.</item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+          <item>Does the execution appear different from part 2?</item>
+        </list>
+      </section>
+      <section id="id1169794072991">
+        <title>Part 4</title>
+        <list id="id1169784358558" list-type="bulleted">
+          <item>In this part you will add a semaphore to the program. One task will pend on the semaphore and the other will post to the semaphore.</item>
+          <item>Have in your system two TSKs with the following properties</item>
+        </list>
+        <list id="id1169787192293" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 1, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+          <item><code display="inline">TSK0</code> pends on the semaphore and <code display="inline">TSK1</code> posts to the semaphore in the loop.</item>
+        </list>
+        <list id="id1169787180128" list-type="bulleted">
+          <item>Have in your system a semaphore with the following properties</item>
+        </list>
+        <list id="id1169786749854" list-type="enumerated" number-style="arabic">
+          <item>Name: SEM0, initial value: 1</item>
+        </list>
+        <list id="id1169787766990" list-type="bulleted">
+          <item>Name your new<code display="inline"> main</code> file <code display="inline">main4.c</code>.</item>
+          <item>Remove the task yield from each task.</item>
+          <item>Use <code display="inline">SYS_FOREVER</code> for the timeout on the pend.</item>
+          <item>Put <code display="inline">TSK0</code> first in the priority list in the configuration file. This will cause it to run first.</item>
+          <item>Start the debug session.</item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1169781572477">
+        <title>Part 5</title>
+        <list id="id1169784682783" list-type="bulleted">
+          <item>In this part you change the initial value on the semaphore and observe what happens.</item>
+          <item>Have in your system two TSKs with the following properties</item>
+        </list>
+        <list id="id1169781572673" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 1, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+          <item><code display="inline">TSK0</code> pends on the semaphore and <code display="inline">TSK1</code> posts to the semaphore.</item>
+        </list>
+        <list id="id1169784409548" list-type="bulleted">
+          <item>Semaphore with the following properties</item>
+        </list>
+        <list id="id1169792198575" list-type="enumerated" number-style="arabic">
+          <item>Name: SEM0, initial value: 2, 3 (run multiple times to get these).</item>
+        </list>
+        <list id="id1169789807206" list-type="bulleted">
+          <item>Change the semaphore initial value to 2.</item>
+          <item>Start the debug session.</item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+          <item>Run the program with different SEM0 initial values.</item>
+          <item>What happens with the different initial values?</item>
+        </list>
+      </section>
+      <section id="id1169793378717">
+        <title>Part 6</title>
+        <list id="id1169811752351" list-type="bulleted">
+          <item>In this part you will make the task that posts to the semaphore a higher priority. </item>
+          <item>Two TSKs with the following properties</item>
+          <item>Have in your system two TSKs with the following properties</item>
+        </list>
+        <list id="id1169781044828" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 1, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 2, function: <code display="inline">_funTSK1</code>.</item>
+          <item><code display="inline">TSK0</code> pends on the semaphore and <code display="inline">TSK1</code> posts to the semaphore.</item>
+        </list>
+        <list id="id1478314" list-type="bulleted">
+          <item>Semaphore with the following properties</item>
+        </list>
+        <list id="id1169807315259" list-type="enumerated" number-style="arabic">
+          <item>Name: SEM0, initial value: 1</item>
+        </list>
+        <list id="id1169792046605" list-type="bulleted">
+          <item>Make the task that is posting a higher priority than the other.</item>
+          <item>Start the debug session.</item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1169807474034">
+        <title>Part 7</title>
+        <list id="id1169802028752" list-type="bulleted">
+          <item>In this part you will make the task that pends on the semaphore a higher priority.</item>
+          <item>Have in your system two TSKs with the following properties</item>
+        </list>
+        <list id="id1169781162640" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 2, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+          <item><code display="inline">TSK0</code> pends on the semaphore and <code display="inline">TSK1</code> posts to the semaphore.</item>
+        </list>
+        <list id="id1169789715557" list-type="bulleted">
+          <item>Semaphore with the following properties</item>
+        </list>
+        <list id="id1169786354357" list-type="enumerated" number-style="arabic">
+          <item>Name: SEM0, initial value: 2</item>
+        </list>
+        <list id="id1169786627675" list-type="bulleted">
+          <item>Start the debug session.</item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1169803457216">
+        <title>Part 8</title>
+        <list id="id1169800784053" list-type="bulleted">
+          <item>In this part you will run the code that is given for each task and then document for each step through the code the state of the tasks and semaphore and any output that is printed.</item>
+          <item>Have in your system two TSKs with the following properties</item>
+        </list>
+        <list id="id1169781514959" list-type="enumerated" number-style="arabic">
+          <item>Name: <code display="inline">TSK0</code>, priority: 1, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+        </list>
+        <list id="id1169780962164" list-type="bulleted">
+          <item>Put <code display="inline">TSK0</code> first in the priority list in the configuration file. This will cause it to run first.</item>
+          <item>Semaphore with the following properties</item>
+        </list>
+        <list id="id1169786837806" list-type="enumerated" number-style="arabic">
+          <item>Name: SEM0, initial value: 1</item>
+        </list>
+        <list id="id1169784069363" list-type="bulleted">
+          <item>Use the followng code for your tasks.</item>
+        </list>
+        <code id="id1169788376839" display="block">void funTSK0()
+    {
+    LOG_printf(&amp;trace,"TSK0 Starting");
+    SEM_post(&amp;SEM0);
+    LOG_printf(&amp;trace,"TSK0 1");
+    SEM_pend(&amp;SEM0,SYS_FOREVER);
+    LOG_printf(&amp;trace,"TSK0 2");
+    SEM_pend(&amp;SEM0,SYS_FOREVER);
+    SEM_pend(&amp;SEM0,SYS_FOREVER);
+    LOG_printf(&amp;trace,"TSK0 3");
+    SEM_post(&amp;SEM0);
+    LOG_printf(&amp;trace,"TSK0 Finish");
+    } 
+    funTSK1(){
+    LOG_printf(&amp;trace,"TSK1 Start");
+    SEM_post(&amp;SEM0);
+    LOG_printf(&amp;trace,"TSK1 1");
+    SEM_pend(&amp;SEM0,SYS_FOREVER);
+    SEM_post(&amp;SEM0);
+    SEM_pend(&amp;SEM0,SYS_FOREVER);
+    LOG_printf(&amp;trace,"TSK1 2");
+    LOG_printf(&amp;trace,"TSK1 Finish");
+    } 
+    </code>
+        <list id="id1169788973954" list-type="bulleted">
+          <item>Fill out the following table as you run your program.</item>
+        </list>
+        <table id="id1169786161567" summary="">
+          <tgroup cols="5">
+            <colspec colnum="1" colname="c1"/>
+            <colspec colnum="2" colname="c2"/>
+            <colspec colnum="3" colname="c3"/>
+            <colspec colnum="4" colname="c4"/>
+            <colspec colnum="5" colname="c5"/>
+            <tbody>
+              <row>
+                <entry>Code Line #</entry>
+                <entry>TSK0 State</entry>
+                <entry>TSK1 State</entry>
+                <entry>SEM0</entry>
+                <entry>Output</entry>
+              </row>
+              <row>
+                <entry>1</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>2</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>3</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>4</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>5</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>6</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>7</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>8</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>9</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>10</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>11</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>12</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>13</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>14</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>15</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>16</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>17</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+              <row>
+                <entry>18</entry>
+                <entry/>
+                <entry/>
+                <entry/>
+                <entry/>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </section>
+    </section>
+    <section id="id1169813888918">
+      <title>Laboratory Write-up</title>
+      <list id="id1169787830150" list-type="bulleted">
+        <item>For each part of this lab, explain the setup of the objects and what they are doing. Explain the results in great detail showing values for things like the semaphore count and why the task is running.</item>
+      </list>
+    </section>
+  </content>
+</document>

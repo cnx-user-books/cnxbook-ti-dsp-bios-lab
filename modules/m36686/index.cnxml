@@ -1,0 +1,298 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>TI DSP/BIOS SEM Module</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36686</md:content-id>
+  <md:title>TI DSP/BIOS SEM Module</md:title>
+  <md:abstract>This module describes the basics of the TI DSP/BIOS Semaphore Module (SEM).</md:abstract>
+  <md:uuid>c43a7f83-11b4-4686-877e-f6791d6a8145</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1167653122840">
+      <title>Introduction</title>
+      <para id="id3700667">The DSP/BIOS real-time operating system provides for inter-task synchronization through the use of semaphores. The module that provides this function is the SEM module. This module will describe the basic use of SEM objects that are initialized in the configuration tool.</para>
+    </section>
+    <section id="id1167650610115">
+      <title>Reading</title>
+      <list id="id4674747" list-type="bulleted">
+        <item>SPRU423 TMS320 DSP/BIOS Users Guide: Read the section on Semaphores.</item>
+      </list>
+    </section>
+    <section id="id1167643244205">
+      <title>SEM Module</title>
+      <para id="id1167643508954">Semaphores provide a way for intertask communication and synchronization. They are used to coordinate access to a shared resource being accessed by multiple tasks. The SEM objects are counting semaphores which means they keep a record of the number of corresponding resources available.</para>
+      <para id="id1167649223843">There are two main functions for using a semaphore once it has been created.</para>
+      <list id="id1167652708306" list-type="bulleted">
+        <item><code display="inline">SEM_pend</code> is used to wait for a semaphore. If the semaphore has a positive value, this function will simply decrement the semaphore and return. If the value of the semaphore is 0, the task calling <code display="inline">SEM_pend</code> is blocked and its state is changed to <emphasis>TSK_BLOCKED</emphasis>. The timeout parameter to <code display="inline">SEM_pend</code> allows the task to wait until a timeout occurs, wait indefinitely (<code display="inline">SYS_FOREVER</code>), or not wait at all. <code display="inline">SEM_pend</code>'s return value is used to indicate if the semaphore was signaled successfully.</item>
+        <item><code display="inline">SEM_post</code> is used to signal a semaphore. If a particular task is waiting for the semaphore (in the <emphasis>TSK_BLOCKED</emphasis> state), <code display="inline">SEM_post</code> removes the task from the semaphore queue and puts it on the ready queue (in the <emphasis>TSK_READY</emphasis> state). In this case, the semaphore remains at 0. If no tasks are waiting, <code display="inline">SEM_post</code> simply increments the semaphore count and returns.</item>
+      </list>
+      <para id="id1167641962333">To create an SEM object, open the configuration file, right click on <emphasis>Syncronization-&gt; SEM</emphasis> and select <emphasis>Insert SEM</emphasis>. You can right click on the object and select <emphasis>Properties</emphasis> to change its properties. The following figure shows a semaphore, SEM0, in the configuration tool with an initial value of 1.</para>
+      <para id="id1167650968922">
+        <figure id="id1167649448170">
+          <media id="id1167649448170_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics1-430d.png" id="id1167649448170__onlineimage" height="296" width="510"/>
+          </media>
+          <caption>Semaphore in configuration tool</caption>
+        </figure>
+      </para>
+      <para id="id1167666348011">As an example, suppose there are two tasks, TSK0 and TSK1, that are at the same priority. When program execution begins, TSK0 starts first. The semaphore, SEM0, is initialized to 1. The following code is used for the two tasks.</para>
+      <code id="id1167663476451" display="block">funTSK0(){
+    1 LOG_printf(&amp;trace,"TSK0 Start");
+    2 SEM_pend(&amp;SEM0,SYS_FOREVER);
+    3 LOG_printf(&amp;trace,"TSK0 1");
+    4 SEM_pend(&amp;SEM0);
+    11 LOG_printf(&amp;trace,"TSK0 2");
+    12 SEM_post(&amp;SEM0);
+    13 SEM_post(&amp;SEM0);
+    14 LOG_printf(&amp;trace,"TSK0 3");
+    15 SEM_post(&amp;SEM0);
+    16 LOG_printf(&amp;trace,"TSK0 Finish");
+    } 
+    funTSK1(){
+    5 LOG_printf(&amp;trace,"TSK1 Start");
+    6 SEM_post(&amp;SEM0);
+    7 LOG_printf(&amp;trace,"TSK1 1");
+    8 SEM_post(&amp;SEM0);
+    9 SEM_pend(&amp;SEM0);
+    10 SEM_pend(&amp;SEM0);
+    17 LOG_printf(&amp;trace,"TSK1 2");
+    18 LOG_printf(&amp;trace,"TSK1 Finish");
+    } 
+    </code>
+      <para id="id1690959">The following table shows the order of execution, the state of the two tasks, the value of the semaphore and any output printed. The Code Line # indicates which line of code is executed. The line in the table indicates the result after the line of code is executed. For instance, the line 1 indicates that the following line of code is executed:</para>
+      <code id="id1167648585261" display="block">1 LOG_printf(&amp;trace,"TSK0 Start");
+    </code>
+      <para id="id1167671815421">In the table, the TSK0 is in the TSK_RUNNING (E) state, TSK1 is in the TSK_READY (R) state, the semaphore has a value of 1 and the line causes the output "TSK0 Start". The next line of code to execute is</para>
+      <code id="id1167643436464" display="block">2 SEM_pend(&amp;SEM0,SYS_FOREVER);
+    </code>
+      <para id="id1167643558571">The other states for the tasks are TSK_BLOCKED (B) and TSK_TERMINATED (T).</para>
+      <table id="id1167652808455" summary="">
+        <tgroup cols="5">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <tbody>
+            <row>
+              <entry>Code Line #</entry>
+              <entry>TSK0 State</entry>
+              <entry>TSK1 State</entry>
+              <entry>SEM0</entry>
+              <entry>Output</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>E </entry>
+              <entry>R</entry>
+              <entry>1</entry>
+              <entry>TSK0 Start</entry>
+            </row>
+            <row>
+              <entry>2</entry>
+              <entry>E </entry>
+              <entry>R </entry>
+              <entry>0 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>3</entry>
+              <entry>E </entry>
+              <entry>R </entry>
+              <entry>0 </entry>
+              <entry>TSK0 1 </entry>
+            </row>
+            <row>
+              <entry>4</entry>
+              <entry>B</entry>
+              <entry>E </entry>
+              <entry>0 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>5</entry>
+              <entry>B </entry>
+              <entry>E </entry>
+              <entry>0 </entry>
+              <entry>TSK1 Start </entry>
+            </row>
+            <row>
+              <entry>6</entry>
+              <entry>R </entry>
+              <entry>E </entry>
+              <entry>0 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>7</entry>
+              <entry>R </entry>
+              <entry>E </entry>
+              <entry>0 </entry>
+              <entry>TSK 1 </entry>
+            </row>
+            <row>
+              <entry>8</entry>
+              <entry>R </entry>
+              <entry>E </entry>
+              <entry>1 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>9</entry>
+              <entry>R </entry>
+              <entry>E </entry>
+              <entry>0 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>10</entry>
+              <entry>E </entry>
+              <entry>B </entry>
+              <entry>0 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>11</entry>
+              <entry>E </entry>
+              <entry>B </entry>
+              <entry>0 </entry>
+              <entry>TSK0 2 </entry>
+            </row>
+            <row>
+              <entry>12</entry>
+              <entry>E </entry>
+              <entry>R </entry>
+              <entry>0 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>13</entry>
+              <entry>E </entry>
+              <entry>R </entry>
+              <entry>1 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>14</entry>
+              <entry>E </entry>
+              <entry>R </entry>
+              <entry>1 </entry>
+              <entry>TSK0 3 </entry>
+            </row>
+            <row>
+              <entry>15</entry>
+              <entry>E </entry>
+              <entry>R </entry>
+              <entry>2 </entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>16</entry>
+              <entry>E </entry>
+              <entry>R </entry>
+              <entry>2 </entry>
+              <entry>TSK0 Finish </entry>
+            </row>
+            <row>
+              <entry>17</entry>
+              <entry>T </entry>
+              <entry>E </entry>
+              <entry>2 </entry>
+              <entry>TSK1 2 </entry>
+            </row>
+            <row>
+              <entry>18</entry>
+              <entry>T </entry>
+              <entry>T </entry>
+              <entry>2 </entry>
+              <entry>TSK1 Finish </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="id3733738">
+      <title>Semaphore as a resource monitor</title>
+      <para id="id1167644839178">There are a couple common practical uses for semaphores. One of those uses is to count how many items are on a queue. The other is to restrict tasks from accessing a resource at the same time.</para>
+      <section id="id1167643838719">
+        <title>Queue count</title>
+        <para id="id1167652809992">Suppose there are two tasks in your system, TSK_Send and TSK_Receive and there is one queue between them, QUE0. To keep track of how many elements are on the queue there is a counting semaphore, SEM0. The semaphore is initialized to 0. See Figure 1.</para>
+        <figure id="id1167642340881">
+          <media id="id1167642340881_media" alt="">
+            <image mime-type="image/jpg" src="../../media/graphics2-ca92.jpg" id="id1167642340881__onlineimage" height="43" width="311"/>
+          </media>
+          <caption>Tasks and queue</caption>
+        </figure>
+        <para id="id1167652336828">When TSK_Send puts a message on the queue, it will perform a <code display="inline">SEM_post(&amp;SEM0)</code> which will increment the count on the semaphore. Before the TSK_Receive tries to get a message off the queue it will perform a <code display="inline">SEM_pend(&amp;SEM0,SYS_FOREVER)</code>. This will decrement the count on the semaphore every time the TSK_Receive takes a message off the queue. If there are no messages on the queue, SEM0 will be 0 and the task will block. This will cause the task to wait until the TSK_Send task puts another message on the queue.</para>
+      </section>
+      <section id="id1167647504594">
+        <title>Resource sharing</title>
+        <para id="id1167650625042">When two tasks share a resource, it may be necessary for the tasks have mutually exclusive access to the resource. In this case, a semaphore can be used to acquire access to the resourse or lock access to a resource. </para>
+        <para id="id1167645973578">Suppose there are two tasks with the same priority in your system, TSK0 and TSK1. There is a Resource that the two tasks share. A semaphore, SEM0, will be used to aquire access to the resource. The semaphore is initialized to 1. See Figure 2.</para>
+        <figure id="id1167649014184">
+          <media id="id1167649014184_media" alt="">
+            <image mime-type="image/jpg" src="../../media/graphics3-b825.jpg" id="id1167649014184__onlineimage" height="67" width="359"/>
+          </media>
+          <caption>Two tasks sharing a resource</caption>
+        </figure>
+        <para id="id3533641">In order for the tasks to have mutually exclusive access to the resource, each task must perform a <code display="inline">SEM_pend(&amp;SEM0,SYS_FOREVER)</code> before using the resource and a <code display="inline">SEM_post(&amp;SEM0)</code> after using the resource.</para>
+        <para id="id1167644726988">Examine the following code that does NOT use a semaphore when writing to the resource.</para>
+        <code id="id1167648996304" display="block">int Resource[4];
+    Void funTSK0()
+    {
+    Resource[0]=0;
+    Resource[1]=1;
+    TSK_yield();
+    Resource[2]=2;
+    Resource[3]=3;
+    }
+    
+    Void funTSK1()
+    {
+    Resource[0]=4;
+    Resource[1]=5;
+    Resource[2]=6;
+    Resource[3]=7;
+    }
+    </code>
+        <para id="id1167650929690">When the tasks finish the contents of the array Resource will be [4,5,2,3]. Clearly, we would like it to be either [0,1,2,3] or [4,5,6,7]. To fix this, add the semaphore.</para>
+        <code id="id1167652816536" display="block">int Resource[4];
+    Void funTSK0()
+    {
+    SEM_pend(&amp;SEM0,SYS_FOREVER);
+    Resource[0]=0;
+    Resource[1]=1;
+    TSK_yield();
+    Resource[2]=2;
+    Resource[3]=3;
+    SEM_post(&amp;SEM0);
+    }
+    
+    Void funTSK1()
+    {
+    SEM_pend(&amp;SEM0,SYS_FOREVER);
+    Resource[0]=4;
+    Resource[1]=5;
+    Resource[2]=6;
+    Resource[3]=7;
+    SEM_post(&amp;SEM0);
+    }
+    
+    </code>
+        <para id="id1167674002021">When the tasks finish the contents of the array Resource will be [4,5,6,7]. The reason for this is that after TSK0 performs a <code display="inline">TSK_yield</code>, TSK1 tries to perform a <code display="inline">SEM_pend</code> but gets blocked. At that point TSK0 continues running and finishes with the resource. Then TSK1 begins to run and writes the complete array.</para>
+      </section>
+    </section>
+    <section id="id1167657565390">
+      <title>Viewing Objects</title>
+      <para id="id3524768">Whe debugging a project it is important to see the characteristics of the components in your project. When using DSP/BIOS in CCS it is possible to view the DSP/BIOS objects and their properties using the RTSC Object Viewer (ROV). RTSC is Real Time Software Components which is a standard for developing software modules/libraries.</para>
+      <para id="id1167643839147">To view the DSP/BIOS v5.x objects and properties in the debug mode, select <emphasis>Tools-&gt;ROV</emphasis>. This will bring up a window that looks like the following figure.</para>
+      <figure id="id1167643443110">
+        <media id="id1167643443110_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics4-c899.png" id="id1167643443110__onlineimage" height="207" width="600"/>
+        </media>
+        <caption>RTSC Object Viewer</caption>
+      </figure>
+      <para id="id1167649117089">This figure shows the SEM module and the semaphore in the project. Notice the different properties that can be seen for each semaphore.</para>
+    </section>
+  </content>
+</document>

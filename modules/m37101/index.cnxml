@@ -1,0 +1,119 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Microsoft Visual Basic Queues</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37101</md:content-id>
+  <md:title>Microsoft Visual Basic Queues</md:title>
+  <md:abstract>This module describes the very basics of Micorsoft Visual Basic queues and also the AutoResetEvent event.</md:abstract>
+  <md:uuid>639f4ee9-53ca-4e6d-9b2b-91ebc6d404ec</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1165415799574">
+      <title>Introduction</title>
+      <para id="id1165425232427">This module describes the basics of Visual Basic queues and also describes the <code display="inline">AutoResetEvent</code> event. </para>
+    </section>
+    <section id="id1165430147347">
+      <title>Reading</title>
+      <list id="id2554776" list-type="bulleted">
+        <item>Queue Class: <link url="http://msdn.microsoft.com/en-us/library/system.collections.queue.aspx">http://msdn.microsoft.com/en-us/library/system.collections.queue.aspx</link></item>
+        <item>Queue members: <link url="http://msdn.microsoft.com/en-us/library/system.collections.queue_members.aspx">http://msdn.microsoft.com/en-us/library/system.collections.queue_members.aspx</link></item>
+        <item>Queue.Synchronized Method: <link url="http://msdn.microsoft.com/en-us/library/system.collections.queue.synchronized.aspx">http://msdn.microsoft.com/en-us/library/system.collections.queue.synchronized.aspx</link></item>
+        <item>AutoResetEvent Class: <link url="http://msdn.microsoft.com/en-us/library/system.threading.autoresetevent.aspx">http://msdn.microsoft.com/en-us/library/system.threading.autoresetevent.aspx</link></item>
+      </list>
+    </section>
+    <section id="id1165419650585">
+      <title>Queues</title>
+      <para id="id1165408383335">Queues in Visual Basic (VB) are very simple to work with and very flexible. Defining a queue object is done with the following command:</para>
+      <code id="id1165403806816" display="block">Dim myQ As New Queue
+    </code>
+      <para id="id1165412929759">This creates a single queue object named <code display="inline">myQ</code>. The main methods described in this module are:</para>
+      <code id="id2531561" display="block">myQ.Enqueue()
+    myQ.Dequeue()
+    </code>
+      <para id="id1165405017102">The <code display="inline">Enqueue</code> method puts items on the queue and the <code display="inline">Dequeue</code> method takes items off the queue. With these two methods the queue works as a first-in-first-out (FIFO) type of queue. A property of the queue object that is very useful is the count property:</para>
+      <code id="id1165407768430" display="block">myQ.count
+    </code>
+      <para id="id1165418415955">This returns the number of items in the queue.</para>
+      <para id="id1165414501890"><emphasis>VB queues are not thread safe.</emphasis> This means that the operating system does not prevent multiple threads from modifying a queue at the same time. This can cause problems if you have multiple threads reading and writing to the same queue.</para>
+      <para id="id1165422467509">If you have multiple threads removing items from a queue you can run into problems. If a thread accesses the <code display="inline">count</code> property and it says there is an object on the queue and then the thread tries to access that element, another thread may remove it from the queue before the first thread has a chance to access it. If there is only one thread that removes items from a queue you will not have this problem.</para>
+      <para id="id1165404251023">To assure that a queue is thread safe you should use the <code display="inline">Synchronized</code> method of the queue. This method returns a wrapper for the queue that assures that the queue is thread safe. It does not fix the problem where two threads are taking items off the queue at the same time though. To use the <code display="inline">Synchronized</code> method first make a queue object and then make an object with the <code display="inline">Synchronized</code> method.</para>
+      <code id="id1165408525940" display="block">Dim myQ As New Queue
+    Dim mySyncdQ As Queue = Queue.Synchronized(myQ)
+    </code>
+      <para id="id1165412833009">The queue <code display="inline">mySyncdQ</code> is a thread safe queue.</para>
+      <para id="id8876243">To synchronize threads that communicate using a queue, there is a need for the writing thread to inform the reading thread that there is something available on the queue. This signaling prevents the reading thread from wasting time checking to see if anything is available on the queue. The reading thread will simply wait to be signaled that something is on the queue and then it will access the queue. To do this you can use an <code display="inline">AutoResetEvent</code> event.</para>
+      <para id="id8722778">From the MSDN help files: "<code display="inline">AutoResetEvent</code> allows threads to communicate with each other by signaling. Typically, this communication concerns a resource to which threads need exclusive access. A thread waits for a signal by calling <code display="inline">WaitOne</code> on the <code display="inline">AutoResetEvent</code>. If the <code display="inline">AutoResetEvent</code> is in the non-signaled state, the thread blocks, waiting for the thread that currently controls the resource to signal that the resource is available by calling <code display="inline">Set</code>. Calling <code display="inline">Set</code> signals <code display="inline">AutoResetEvent</code> to release a waiting thread. <code display="inline">AutoResetEvent</code> remains signaled until a single waiting thread is released, and then automatically returns to the non-signaled state. If no threads are waiting, the state remains signaled indefinitely. If a thread calls <code display="inline">WaitOne</code> while the AutoResetEvent is in the signaled state, the thread does not block. The <code display="inline">AutoResetEvent</code> releases the thread immediately and returns to the non-signaled state. There is no guarantee that every call to the <code display="inline">Set</code> method will release a thread. If two calls are too close together, so that the second call occurs before a thread has been released, only one thread is released. It is as if the second call did not happen. Also, if <code display="inline">Set</code> is called when there are no threads waiting and the <code display="inline">AutoResetEvent</code> is already signaled, the call has no effect."</para>
+      <para id="id8785409">To create an <code display="inline">AutoResetEvent</code> event use a command like:</para>
+      <code id="id1165423532071" display="block">Dim mySyncdQEvent As New AutoResetEvent(False)
+    </code>
+      <para id="id3082792">This will create an <code display="inline">AutoResetEvent</code> event called <code display="inline">mySyncdQEvent</code> with the initial value of <code display="inline">False</code>. When your code writes to a queue you can use the <code display="inline">Set</code> method to signal to the reader thread that something is on the queue. The reader thread can use the <code display="inline">WaitOne</code> method to wait to be signaled. The code for the writer thread to put something on the queue and then signal the event is:</para>
+      <code id="id1942933" display="block">mySyncdQ.Enqueue(Something)
+    mySyncdQEvent.Set()
+    </code>
+      <para id="id1165412457979">The reader thread can use code like:</para>
+      <code id="id1165431137106" display="block">mySyncdQEvent.WaitOne()
+    While mySyncdQ.Count
+    Console.WriteLine(mySyncdQ.Dequeue())
+    End While
+    </code>
+      <para id="id1165407100530">This will wait until something is available on the queue and then take all the items in the queue off and print the contents. This assumes that there is <emphasis>only one reader</emphasis> for the queue. If you have more than one reader for the queue you will need to lock the resource before using it. This is not explained here.</para>
+    </section>
+    <section id="id1165404275850">
+      <title>Example</title>
+      <para id="id1165407015649">This example starts with a VB Form application that contains one TextBox named <code display="inline">TextBox1</code>. Double clicking on the TextBox will open the code view and make a <code display="inline">TextBox1_TextChanged</code> method. As you type into the TextBox this method will be executed for each character that changes. </para>
+      <para id="id1165430055075">The example has one queue called <code display="inline">myQ</code> and is used as a synchronized queue with <code display="inline">mySyncdQ</code>. There is also a thread named <code display="inline">thread1</code> that is started that runs the method <code display="inline">ThreadMethodReceive</code>. This method will remove items from the queue and print them to the console. </para>
+      <para id="id1165416683664">Every time the text changes in the TextBox the <code display="inline">TextBox1_TextChanged</code> method puts the contents of the TextBox onto the queue and signals a <code display="inline">AutoResetEvent</code> named <code display="inline">mySyncdQEvent</code>. The thread <code display="inline">thread1</code> calls the method <code display="inline">WaitOne</code> for the <code display="inline">AutoResetEvent</code> event. This will cause the thread to block until there is something on the queue.</para>
+      <code id="id1165423898320" display="block">Imports System.Threading
+    Public Class Form1
+    ' Thread that will receive the messages that are put on the queue
+    Dim thread1 As New Thread(AddressOf ThreadMethodReceive)
+    ' Queue where message will be stored
+    Dim myQ As New Queue
+    ' Thread safe queue that will be used
+    Dim mySyncdQ As Queue = Queue.Synchronized(myQ)
+    ' Event used to syncronize the TextBox putting items on the queue and the thread
+    Dim mySyncdQEvent As New AutoResetEvent(False)
+    
+    ' Method executed when the form is loaded
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    
+    ' Make this a background thread so it automatically
+    ' aborts when the main program stops.
+    thread1.IsBackground = True
+    ' Set the thread priority to lowest
+    thread1.Priority = ThreadPriority.Lowest
+    ' Start the thread
+    thread1.Start()
+    End Sub
+    
+    ' Thread that runs seperate from the Form1 thread
+    Private Sub ThreadMethodReceive()
+    ' Loop forever
+    While 1
+    ' Half second pause before checking the sync event
+    Thread.Sleep(500)
+    ' Wait on the sync event. If something has been put on
+    ' the queue there will be an event.
+    mySyncdQEvent.WaitOne()
+    ' Continue removing items from the queue until it is empty
+    While mySyncdQ.Count
+    ' Print the items removed from the queue
+    Console.WriteLine(mySyncdQ.Dequeue())
+    End While
+    
+    End While
+    
+    End Sub
+    
+    Private Sub TextBox1_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox1.TextChanged
+    ' Put the content of the text box on the queue
+    mySyncdQ.Enqueue(TextBox1.Text)
+    ' Signal that something has been added to the queue.
+    mySyncdQEvent.Set()
+    
+    End Sub
+    End Class
+    </code>
+    </section>
+  </content>
+</document>

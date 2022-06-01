@@ -1,0 +1,182 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Microsoft Visual Basic Tasks and Semaphores</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37030</md:content-id>
+  <md:title>Microsoft Visual Basic Tasks and Semaphores</md:title>
+  <md:abstract>This module describes the basics of Microsoft Visual Basic Threads and Semaphores.</md:abstract>
+  <md:uuid>78cfeb19-2e23-4aa9-8473-080cc6bfe114</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1172435910276">
+      <title>Introduction</title>
+      <para id="id1172431127218">Microsoft Visual Basic provides resources for managing threads and semaphores. This module will give a basic overview of threads and semaphores in Visual Basic (VB). This module presents threads and semaphores in VB in a very simplistic manner. There are much better ways to use threads in VB but they will be presented here in a way that makes the programs much easier to write. The threads described here will be methods of the Form class. This is what makes the programming very simple. Threads should/could be classes on their own but it is not necessary. This module is not intended to make you proficient in using threads and semaphores in Visual Basic.</para>
+    </section>
+    <section id="id1172430043928">
+      <title>Reading</title>
+      <list id="id1172430018201" list-type="bulleted">
+        <item>System.Threading Namespace: <link url="http://msdn.microsoft.com/en-us/library/system.threading.aspx">http://msdn.microsoft.com/en-us/library/system.threading.aspx</link></item>
+        <item>Semaphore Class: <link url="http://msdn.microsoft.com/en-us/library/system.threading.semaphore.aspx">http://msdn.microsoft.com/en-us/library/system.threading.semaphore.aspx</link></item>
+        <item>Thread Class: <link url="http://msdn.microsoft.com/en-us/library/system.threading.thread.aspx">http://msdn.microsoft.com/en-us/library/system.threading.thread.aspx</link></item>
+        <item>Console WriteLine method: <link url="http://msdn.microsoft.com/en-us/library/586y06yf.aspx">http://msdn.microsoft.com/en-us/library/586y06yf.aspx</link></item>
+      </list>
+    </section>
+    <section id="id1172437305954">
+      <title>Module Prerequisites</title>
+      <para id="id1172428711304">It would be helpful to have completed the TSK and SEM modules for the DSP/BIOS operating system but it is not necessary if you are familiar with tasks and semaphores.</para>
+    </section>
+    <section id="id1172446235403">
+      <title>Visual Basic Threads</title>
+      <para id="id1172429996484">A thread is simply a separate method or function that gets executed apart from the main program flow. There can be many threads executing simultaneously in a system. In VB the <code display="inline">System.Threading</code> namespace needs to be imported into the program. This is done by putting the following at the very top of your code:</para>
+      <code id="id1172430259560" display="block">Imports System.Threading
+    </code>
+      <para id="id1172430945472">If this is not included at the top of your program then it will not know what threads are.</para>
+      <para id="id1172432257291">The following is the basic structure of your program for this lab. Each part of the example code is described in the comments.</para>
+      <code id="id1172434665368" display="block">' This imports the threading namespace so the program knows about threads
+    Imports System.Threading 
+    
+    ' This is the class that executes the form for the program
+    Public Class Form1
+    ' This is a definition of a thread. The thread object is thread1 and
+    ' it uses the method Task1() below as its code.
+    Dim thread1 As New Thread(AddressOf Task1)
+    
+    ' When the form program starts or is loaded the following function is
+    ' called. This is where you can put the commands to set up our program.
+    ' The code for starting up the threads can be put here.
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    
+    ' Make this a background thread so it automatically
+    ' aborts when the main program stops.
+    thread1.IsBackground = True
+    ' Set the thread priority
+    thread1.Priority = ThreadPriority.Lowest
+    ' This command starts the thread. The method Task1() then
+    ' starts to execute.
+    thread1.Start()
+    End Sub
+    
+    Private Sub Task1()
+    ' This is where your code goes for this thread
+    End Sub
+    
+    End Class
+    </code>
+      <para id="id1172429432608">The real-time operating system in Visual Studio is not a deterministic operating system. This means that you cannot be sure of how the threads will execute. Windows assigns time to threads at the same priority in a round-robin fashion. When threads at a particular level do not need to execute the operating system assigns time to lower priority threads.</para>
+    </section>
+    <section id="id1172429781780">
+      <title>Visual Basic Semaphores</title>
+      <para id="id1172450834656">Semaphores in VB are used to control access to a resource. They act as a counting semaphore except that there is a maximum value that the semaphore can have. This value is set when the semaphore is declared. The following is an example of the definition of a semaphore.</para>
+      <code id="id1172448291154" display="block">Dim Sem As New Semaphore(1, 2)
+    </code>
+      <para id="id1172429987966">This defines a semaphore object named <code display="inline">Sem</code> that has a maximum value of 2 and an initial value of 1. The main methods for using the semaphore are <code display="inline">WaitOne()</code> and <code display="inline">Release()</code>. The <code display="inline">WaitOne()</code> method decrements the semaphore and the <code display="inline">Release()</code> method increases it. If the value of the semaphore is 0 when the <code display="inline">WaitOne()</code> method is called the thread will block. When the <code display="inline">Release()</code> method is called when a thread is blocked on the semaphore, it will unblock a thread without incrementing the semaphore. If the <code display="inline">Release()</code> method is called too any times and the semaphore value is increased past the maximum value, a <code display="inline">SemaphoreFullException</code> exception will occur. This module does not discuss how to handle the exception.</para>
+      <para id="id1172430656100">The main way to use the semaphore is shown in the following example.</para>
+      <code id="id1172428508478" display="block">Dim Sem As New Semaphore(1, 1)
+    
+    Sem.WaitOne()
+    ' Use the protected resource here
+    Sem.Release()
+    </code>
+    </section>
+    <section id="id1172431754274">
+      <title>Writing to the console</title>
+      <para id="id1172429745146">To write to the console use function calls such as</para>
+      <code id="id1172429464385" display="block">Console.WriteLine("Name = {0}, hours = {1:hh}", My.Name, DateTime.Now)
+    </code>
+      <para id="id1172429993006">The fixed text is <code display="inline">"Name = "</code> and <code display="inline">", hours = "</code>. The format items are <code display="inline">"{0}"</code>, whose index is 0, which corresponds to the object <code display="inline">My.Name</code>, and <code display="inline">"{1:T}"</code>, whose index is 1, which corresponds to the object <code display="inline">DateTime.Now</code>. The format <code display="inline">T</code> will print the time in the long time format. An example of the output is:</para>
+      <code id="id1172428662537" display="block">Name = Form1, Time = 5:50:54 PM
+    </code>
+    </section>
+    <section id="id1172428414874">
+      <title>Example</title>
+      <para id="id1172431925074">This simple example uses Visual Studio 2010 and VB.NET Framework 4. Create a Form Application and enter the following code:</para>
+      <code id="id1172429776808" display="block">Imports System.Threading
+    Public Class Form1
+    
+    Dim thread1 As New Thread(AddressOf Task)
+    Dim thread2 As New Thread(AddressOf Task)
+    Dim Sem As New Semaphore(1, 1)
+    
+    ' When the form program starts or is loaded the following function is
+    ' called. This is where you can put the commands to set up our program.
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    
+    ' Make this a background thread so it automatically
+    ' aborts when the main program stops.
+    thread1.IsBackground = True
+    ' Set the thread priority to lowest
+    thread1.Priority = ThreadPriority.Lowest
+    ' Start the thread
+    thread1.Start("thread1")
+    
+    ' Make this a background thread so it automatically
+    ' aborts when the main program stops.
+    thread2.IsBackground = True
+    ' Set the thread priority to lowest
+    thread2.Priority = ThreadPriority.Lowest
+    ' Start the thread
+    thread2.Start("thread2")
+    
+    End Sub
+    
+    Private Sub Task(ByVal name As Object)
+    
+    While 1
+    ' wait on the semaphore
+    Sem.WaitOne()
+    ' Print the name of this thread and the current time
+    Console.WriteLine("Name = {0}, Time1 = {1:T}", name, DateTime.Now)
+    ' Sleep to 2 seconds
+    Thread.Sleep(2000)
+    Console.WriteLine("Name = {0}, Time2 = {1:T}", name, DateTime.Now)
+    ' Release the semaphore
+    Sem.Release()
+    
+    End While
+    
+    End Sub
+    
+    End Class
+    </code>
+      <para id="id1172428749970">This program will start up two threads, <code display="inline">thread1</code> and <code display="inline">thread2</code>. Each thread will execute the method <code display="inline">Task()</code> and will pass the name of the thread. This will allow each thread to print something different even though they execute the same method. A semaphore is use to prevent the other thread from interrupting the two print statements. The two print statements for the thread should always print after each other. The following shows the results of the run. Note that the two times always print together.</para>
+      <code id="id1172428593669" display="block">Name = thread1, Time1 = 6:17:16 PM
+    Name = thread1, Time2 = 6:17:18 PM
+    Name = thread1, Time1 = 6:17:18 PM
+    Name = thread1, Time2 = 6:17:20 PM
+    Name = thread1, Time1 = 6:17:20 PM
+    Name = thread1, Time2 = 6:17:22 PM
+    Name = thread2, Time1 = 6:17:22 PM
+    Name = thread2, Time2 = 6:17:24 PM
+    Name = thread2, Time1 = 6:17:24 PM
+    Name = thread2, Time2 = 6:17:26 PM
+    Name = thread2, Time1 = 6:17:26 PM
+    Name = thread2, Time2 = 6:17:28 PM
+    </code>
+      <para id="id1172431285962">The following shows the loop with the semaphore statements removed.</para>
+      <code id="id1172428444809" display="block">While 1
+    ' Print the name of this thread and the current time
+    Console.WriteLine("Name = {0}, Time1 = {1:T}", name, DateTime.Now)
+    ' Sleep to 2 seconds
+    Thread.Sleep(2000)
+    Console.WriteLine("Name = {0}, Time2 = {1:T}", name, DateTime.Now)
+    End While
+    </code>
+      <para id="id1172429218549">This causes a printout like the following. Notice the two prints do not occur next to each other.</para>
+      <code id="id1172431673218" display="block">Name = thread2, Time1 = 6:20:44 PM
+    Name = thread1, Time1 = 6:20:44 PM
+    Name = thread2, Time2 = 6:20:46 PM
+    Name = thread1, Time2 = 6:20:46 PM
+    Name = thread1, Time1 = 6:20:46 PM
+    Name = thread2, Time1 = 6:20:46 PM
+    Name = thread2, Time2 = 6:20:48 PM
+    Name = thread1, Time2 = 6:20:48 PM
+    Name = thread1, Time1 = 6:20:48 PM
+    Name = thread2, Time1 = 6:20:48 PM
+    Name = thread2, Time2 = 6:20:50 PM
+    Name = thread2, Time1 = 6:20:50 PM
+    Name = thread1, Time2 = 6:20:50 PM
+    Name = thread1, Time1 = 6:20:50 PM
+    </code>
+    </section>
+  </content>
+</document>

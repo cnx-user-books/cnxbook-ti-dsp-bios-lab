@@ -1,0 +1,82 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Visual Basic Threads and Semaphores Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37075</md:content-id>
+  <md:title>Visual Basic Threads and Semaphores Lab</md:title>
+  <md:abstract>The module is a lab assignment to help you better understand the very basics of Microsoft Visual Basic threads and semaphores.</md:abstract>
+  <md:uuid>e1331971-c96c-40c0-b5bd-355a1efa7a83</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1171197456186">
+      <title>Introduction</title>
+      <para id="id1171195030722">This lab module will help you become familiar with the basics of threads and semaphores in Microsoft Visual Basic(V). The exercises are written assuming you are using Visual Basic 2005 and the .NET Framework version 2.0 (or later). Some older versions will work the same, but you may need to figure out some differences. It should work with newer version also.</para>
+    </section>
+    <section id="id1171188407060">
+      <title>Module Prerequisites</title>
+      <para id="id1171193311788">It would be helpful to have completed the TSK and SEM modules for the DSP/BIOS operating system but it is not necessary if you are familiar with tasks and semaphores.</para>
+    </section>
+    <section id="id1171188722098">
+      <title>Labratory</title>
+      <section id="id1171200996903">
+        <title>Part 1</title>
+        <list id="id1171195500656" list-type="bulleted">
+          <item>In this part you will make a project that will have two threads that will run at the same priority and print to the console. Examine how the threads at the same priority execute in a round-robin fashion.</item>
+          <item>Start up Visual Studio and create a new Visual Basic project.</item>
+          <item>Create two threads and start them up with the same priority, Lowest.</item>
+          <item>In each thread make a continuous while loop and print the thread name in the loop. Your code can look like this.</item>
+        </list>
+        <code id="id1171194926899" display="block">While 1
+    Console.WriteLine("Thread1")
+    End While
+    </code>
+      </section>
+      <section id="id1171193347797">
+        <title>Part 2</title>
+        <list id="id1171196721751" list-type="bulleted">
+          <item>In this part you will make a project with three threads. The first two threads will write to a single array. The data that each thread writes will be different. The third thread will print the contents of the array. Without locking the resource the threads will not write to the array completely before the other thread writes to it also. The contents of the array will be a mix of data from each thread.</item>
+          <item>Start up Visual Studio and create a new Visual Basic project.</item>
+          <item>Create three threads and start them up with the same priority, Lowest.</item>
+          <item>Make an integer array in the Form1 class. This should be just below the class statement.</item>
+        </list>
+        <para id="id1171188913823">Dim IntArray(100) As Integer</para>
+        <list id="id1171194844878" list-type="bulleted">
+          <item>In the first thread, make an infinite loop and within the loop write the numbers 1-100 (count) into the array. Have the tread sleep for 10 ms each loop too.</item>
+        </list>
+        <code id="id1171196573928" display="block">Dim count As Integer
+    While 1
+    For count = 1 To 100
+    Thread.Sleep(10)
+    IntArray(count) = count
+    Next
+    End While
+    </code>
+        <list id="id1171190576528" list-type="bulleted">
+          <item>In the second thread, make an infinite loop and within the loop write the numbers <code display="inline">100-count</code> into the array. Have the tread sleep for 10 ms each loop too.</item>
+          <item>In the third thread, have it pause for ten seconds or so (<code display="inline">Thread.Sleep(10000)</code>) and then print the values from the array. Do this one time. </item>
+          <item>Run the program and observe whether the array values get written and printed in order.</item>
+          <item>You may not notice but the printing could get interrupted by the other threads.</item>
+        </list>
+      </section>
+      <section id="id1171188807045">
+        <title>Part 3</title>
+        <list id="id1171191002840" list-type="bulleted">
+          <item>In this part you will add a semaphore to the previous project so that the data gets written to the array without interruption. Also, the data will get printed without interruption.</item>
+          <item>Start up Visual Studio and create a new Visual Basic project.</item>
+          <item>Copy all the code from the previous part into this new project.</item>
+          <item>To the code in the previous part, add a semaphore with a maximum value of 1 and an initial value of 1.</item>
+          <item>For the threads that write to the array, add a <code display="inline">WaitOne()</code> call before the <code display="inline">for</code> loop that writes to the array and a <code display="inline">Release()</code> call after the <code display="inline">for</code> loop.</item>
+          <item>For the thread that prints the array data, add a <code display="inline">WaitOne()</code> call before the printing of the array and a <code display="inline">Release()</code> call after the printing.</item>
+          <item>Run the program and observe whether the array values get printed in order.</item>
+        </list>
+      </section>
+    </section>
+    <section id="id1171191912575">
+      <title>Laboratory Write-up</title>
+      <list id="id1171200545692" list-type="bulleted">
+        <item>Print out your projects' code.</item>
+        <item>Explain what is happening in each part.</item>
+      </list>
+    </section>
+  </content>
+</document>

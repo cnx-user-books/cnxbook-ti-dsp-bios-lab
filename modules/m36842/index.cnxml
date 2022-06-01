@@ -1,0 +1,140 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>QUE Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36842</md:content-id>
+  <md:title>QUE Lab</md:title>
+  <md:abstract>This module is a lab assignment to better understand the TI DSP/BIOS QUE module.</md:abstract>
+  <md:uuid>f6351dff-8f8f-4494-bd38-c65d5c092e74</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1164156097746">
+      <title>Introduction</title>
+      <para id="id1164140174899">This lab module will help you become familiar with the TI DSP/BIOS v5.x QUE module. Code Composer Studio v4 is used in this module.</para>
+    </section>
+    <section id="id3977557">
+      <title>Reading</title>
+      <list id="id1164153751293" list-type="bulleted">
+        <item>SPRU423 TMS320 DSP/BIOS Users Guide: Read the section title Queues</item>
+      </list>
+    </section>
+    <section id="id1164134884346">
+      <title>Lab Module Prerequisites</title>
+      <para id="id1164154227420">This lab module uses aspects of the TSK and SEM modules.</para>
+    </section>
+    <section id="id1164140195131">
+      <title>Laboratory</title>
+      <section id="id1164137234202">
+        <title>Part 1</title>
+        <list id="id4245646" list-type="bulleted">
+          <item>In this part you will be creating two TSKs were one will generate some data and send it to the other TSK in a queue. The transmitting TSK will generate 5 messages to send to the receiving TSK which will print out the content of the message.</item>
+          <item>Follow the procedure in <link document="m36660">Code Composer Studio v4 DSP/BIOS Project</link> to create a new CCS DSP/BIOS project. Your project should have a DSP/BIOS v5.x configuration file using the ti.platforms.sim67xx template (or another appropriate template).</item>
+          <item>Create a LOG object by right clicking on Instrumentation-&gt;LOG and selecting Insert LOG. Change the name to <code display="inline">trace</code>. Set its properties to have a length of 512 and be a fixed buffer.</item>
+          <item>Change the LOG_system object to have a length of 512.</item>
+          <item>If using the simulator then change the RTDX interface to Simulator by right clicking on Input/Output-&gt;RTDX and bringing up the properties. Change the RTDX mode to Simulator. If you do not do this then when you load your program you will see the error <emphasis>RTDX application does not match emulation protocol</emphasis>. If you are loading onto an EVM or DSK you leave the setting on JTAG.</item>
+          <item>Create a QUE object by right clicking on Syncronization-&gt;QUE and selecting Insert QUE. This will create a queue called <code display="inline">QUE0</code>. There are no properties to set (unless you want to change the comment).</item>
+          <item>Create two TSKs with the following properties</item>
+        </list>
+        <list id="id1164137682092" list-type="bulleted">
+          <item>Name: <code display="inline">TSK0</code>, priority: 1, function: <code display="inline">_funTSK0</code>.</item>
+          <item>Name: <code display="inline">TSK1</code>, priority: 1, function: <code display="inline">_funTSK1</code>.</item>
+        </list>
+        <list id="id1164139972970" list-type="bulleted">
+          <item>On the priority list make sure that <code display="inline">TSK0</code> is first.</item>
+          <item>Create a <code display="inline">main.c</code> file and include a <code display="inline">main</code> function that does nothing.</item>
+          <item>At the top of <code display="inline">main.c</code> make a global structure for your message as follows:</item>
+        </list>
+        <code id="id1164138248750" display="block">typedef struct MsgObj {
+    QUE_Elem elem; /* first field for QUE */
+    Int val; /* message value */
+    } MsgObj, *Msg;
+    </code>
+        <list id="id1164136596933" list-type="bulleted">
+          <item>In the <code display="inline">main.c</code> file make functions for your TSKs, <code display="inline">funTSK0</code> and <code display="inline">funTSK1</code>.</item>
+          <item>In <code display="inline">funTSK0</code>, which will generate the data, create a loop that will loop 5 times and in the loop have it:</item>
+        </list>
+        <list id="id1164138328321" list-type="enumerated" number-style="arabic">
+          <item>Allocate memory for a new message</item>
+          <item>Fill the message value with the message number. Use a command like: <code display="inline">"msg-&gt;val = ..."</code></item>
+          <item>Print to the trace LOG which message is being generated</item>
+          <item>Put the message on the queue QUE0</item>
+        </list>
+        <list id="id1164144754833" list-type="bulleted">
+          <item>In <code display="inline">funTSK1</code>, which will receive the data, create a loop that will loop 5 times and in the loop have it:</item>
+        </list>
+        <list id="id6328929" list-type="enumerated" number-style="arabic">
+          <item>Check to see if there is a message on the queue and if not then print an error message to the <code display="inline">trace</code> LOG and <code display="inline">return</code>. This will cause the task to be done running and enter the terminated state.</item>
+          <item>Get the message from the queue <code display="inline">QUE0</code></item>
+          <item>Print which message number was read</item>
+          <item>Free the buffer that was used for the message</item>
+        </list>
+        <list id="id1164142026217" list-type="bulleted">
+          <item>Start the debug session. </item>
+          <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+          <item>Run the program and record the results.</item>
+          <item>Describe in detail the processing that is occurring.</item>
+        </list>
+      </section>
+      <section id="id1164140616871">
+        <title>Part 2</title>
+        <list id="id1164147712568" list-type="bulleted">
+          <item>Change the priority of <code display="inline">TSK1</code> to 2.</item>
+          <item>Start the debug session. </item>
+          <item>Run the program and record the results.</item>
+          <item>How does the execution change? Describe in detail.</item>
+        </list>
+      </section>
+      <section id="id1164139556935">
+        <title>Part 3</title>
+        <list id="id1164130736949" list-type="bulleted">
+          <item>In this part you will be adding a semaphore to synchronize the two tasks using the queue. The semaphore will keep track of how many messages are in the queue.</item>
+        </list>
+        <figure id="id1164148834554">
+          <media id="id1164148834554_media" alt="">
+            <image mime-type="image/jpg" src="../../media/graphics1.jpg" id="id1164148834554__onlineimage" height="108" width="227"/>
+          </media>
+          <caption>Setup for Part 3</caption>
+        </figure>
+        <list id="id1164136921934" list-type="bulleted">
+          <item>Copy the <code display="inline">main.c</code> file from above to a new file <code display="inline">main3.c</code>. Remove the <code display="inline">main.c</code> from your project and add <code display="inline">main3.c</code>.</item>
+          <item>Add a semaphore to your configuration file and call it <code display="inline">QUE0_SEM</code>. It should be initialized to 0.</item>
+          <item>Keep the priority of <code display="inline">TSK0</code> set to 1 and <code display="inline">TSK1</code> set to 2.</item>
+          <item>In <code display="inline">main3.c</code> change the following:</item>
+        </list>
+        <list id="id1164142425452" list-type="enumerated" number-style="arabic">
+          <item>In <code display="inline">funTSK0</code> after the <code display="inline">QUE_put</code> add a <code display="inline">SEM_post</code> for <code display="inline">QUE0_SEM</code>.</item>
+          <item>In <code display="inline">funTSK1</code> delete the code that checks to see if there is a message on the queue and replace it with a <code display="inline">SEM_pend</code> for <code display="inline">QUE0_SEM</code>. Use <code display="inline">SYS_FOREVER</code> for the timeout on the pend.</item>
+        </list>
+        <list id="id1164137824505" list-type="bulleted">
+          <item>Start the debug session.</item>
+          <item>Run the program and record the results.</item>
+          <item>Describe in detail the processing that is occurring.</item>
+        </list>
+      </section>
+      <section id="id1164152086373">
+        <title>Part 4</title>
+        <list id="id1164155573844" list-type="bulleted">
+          <item>Notice that in Part 3 that if the program ran for a long time that the code would have to continually allocate memory for a message and then de-allocate it when it was done using the message. This could take up a substantial amount of time and could cause fragmentation of the memory space. A better method is to have two queues where one queue holds messages that are free and one holds messages that contain data being transmitted from one task to another. In this part you will be adding another queue which will be initialized by adding some free messages to it. Also, another semaphore will be added to track the number of free messages on the free queue.</item>
+        </list>
+        <figure id="id1164136574368">
+          <media id="id1164136574368_media" alt="">
+            <image mime-type="image/jpg" src="../../media/graphics2-3a9f.jpg" id="id1164136574368__onlineimage" height="189" width="227"/>
+          </media>
+          <caption>Setup for Part 4 with a free message queue</caption>
+        </figure>
+        <list id="id1164140620989" list-type="bulleted">
+          <item>Copy the <code display="inline">main3.c</code> file from above to a new file <code display="inline">main4.c</code>. Remove the <code display="inline">main3.c</code> from your project and add <code display="inline">main4.c</code>.</item>
+          <item>Add another semaphore to your configuration file and call it <code display="inline">QUE_Free_SEM</code>. It should be initialized to 0.</item>
+          <item>Create a QUE object and call it <code display="inline">QUE_Free</code>.</item>
+          <item>Change the priority of <code display="inline">TSK1</code> to 1 and make sure <code display="inline">TSK0</code> is first in the list.</item>
+          <item>To the <code display="inline">main</code> function add code that loops 3 times and adds 3 messages to the queue <code display="inline">QUE_Free</code>. You will need to allocate memory for the messages. Be sure to post to <code display="inline">QUE_Free_SEM</code> after adding the message to the queue. This will set up the free messages to be used in the program. These messages can then be used and reused without having to allocate and free memory over and over again.</item>
+          <item>In the function <code display="inline">funTSK0</code> delete the code that allocates a message and replace it will code that pends on <code display="inline">QUE_Free_SEM</code> and then gets a message from <code display="inline">QUE_Free</code>.</item>
+          <item>In the function <code display="inline">funTSK1</code> delete the code that frees the message buffer and replace it will code that puts the message on <code display="inline">QUE_Free</code> and then posts to <code display="inline">QUE_Free_SEM</code>.</item>
+          <item>Start the debug session.</item>
+          <item>Run the program and record the results.</item>
+          <item>Describe in detail the processing that is occurring.</item>
+        </list>
+      </section>
+    </section>
+  </content>
+</document>

@@ -1,0 +1,125 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>TI DSP/BIOS TSK Module</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36678</md:content-id>
+  <md:title>TI DSP/BIOS TSK Module</md:title>
+  <md:abstract>This module describes the basics of the TI DSP/BIOS Task Module (TSK).</md:abstract>
+  <md:uuid>d885f1c0-816a-445e-b101-cc05553eabe7</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1165432951164">
+      <title>Introduction</title>
+      <para id="id1165434629216">DSP/BIOS provides several different managers manage threads of execution. One of them is the Task Manager (TSK). This module explains the basics of TSK objects and use. This module only explains the use of static TSK objects which are set up using the configuration tool.</para>
+    </section>
+    <section id="id2320825">
+      <title>Reading</title>
+      <list id="id2199983" list-type="bulleted">
+        <item>SPRU423 TMS320 DSP/BIOS Users Guide: Read the section on Tasks</item>
+      </list>
+    </section>
+    <section id="id1165433716301">
+      <title>TSK Module</title>
+      <para id="id1165458311498">Tasks are independent threads of code that conceptually run concurrently. The processor time is shared among the tasks. Each task has a priority which is used to determine which task gets processor time.</para>
+      <para id="id1165431900217">Each task has its own stack to store local variables, nesting function calls and for saving the task state when it is preempted. The stack size can be set individually for each task.</para>
+      <para id="id1165432849051">A task is always in one of four states</para>
+      <list id="id1165433063647" list-type="bulleted">
+        <item><emphasis>Running</emphasis>, which means the task is the one actually executing on the system’s processor;</item>
+        <item><emphasis>Ready</emphasis>, which means the task is scheduled for execution subject to processor availability;</item>
+        <item><emphasis>Blocked</emphasis>, which means the task cannot execute until a particular event occurs within the system; or</item>
+        <item><emphasis>Terminated</emphasis>, which means the task is “terminated” and does not execute again.</item>
+      </list>
+      <para id="id1165433187433">Figure 1 shows a state transition diagram for a task. There is only one thread in the TSK_RUNNING state. When a task is in the TSK_RUNNING state all the other tasks in the TSK_READY state are at the same or lower priority. When a task of higher priority enters the TSK_READY state a preemption immediately occurs and the running task enters the TSK_READY state and the higher priority task enters the TSK_RUNNING state. Tasks can become blocked when a resource is unavailable or when some other event that causes blocking occurs. Semaphores are used to synchronize access to resources and can cause a task to block. When the resource becomes available the task enters the TSK_READY state.</para>
+      <para id="id1165431586106">
+        <figure id="id1165433112539">
+          <media id="id1165433112539_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics1-c972.png" id="id1165433112539__onlineimage" height="296" width="600"/>
+          </media>
+          <caption>State transition diagram for a task</caption>
+        </figure>
+      </para>
+      <para id="id1165449502688">To create a TSK object, open the configuration file, right click on <emphasis>Scheduling-&gt;TSK</emphasis> and select <emphasis>Insert TSK</emphasis>. You can right click on the object and select <emphasis>Properties</emphasis> to change its properties. Set the TSK priority on the General tab. Click on the Function tab and put the function name (preceded by an underscore) in for the function you want to handle the TSK. Figure 2 shows a view of the configuration file where the TSKs can be seen in their corresponding priority. Notice that the <code display="inline">TSK_idle</code> is priority 0 and it is reserved. This is the idle task.</para>
+      <para id="id6297229">When your program runs, the tasks with the same priority will get initialized in the order that they are shown in the configuration tool.</para>
+      <para id="id1165438756493">
+        <figure id="id1165432553326">
+          <media id="id1165432553326_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics2-4e25.png" id="id1165432553326__onlineimage" height="483" width="600"/>
+          </media>
+          <caption>Configuration file showing TSKs and priorities</caption>
+        </figure>
+      </para>
+      <para id="id1165454492441">There are many functions in the TSK module. Some of the more commonly used ones are:</para>
+      <list id="id1165432822599" list-type="bulleted">
+        <item><code display="inline">TSK_disable</code> - Disable DSP/BIOS task scheduler</item>
+        <item><code display="inline">TSK_enable</code> - Enable DSP/BIOS task scheduler</item>
+        <item><code display="inline">TSK_yield</code> - Yield processor to equal priority task</item>
+        <item><code display="inline">TSK_sleep</code> - Delay execution of the current task</item>
+      </list>
+      <para id="id1165452456685">As an example, suppose there are two task at the same priority as shown in the configuration file in Figure 3. To set up the threads of execution, change the Function properties to <code display="inline">_funTSK0</code> for task TSK0 and <code display="inline">_funTSK</code>1 for task TSK1 as shown in Figure 4. </para>
+      <para id="id1165437273478">
+        <figure id="id1165440659421">
+          <media id="id1165440659421_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics3-2c8c.png" id="id1165440659421__onlineimage" height="490" width="529"/>
+          </media>
+          <caption>Configuration tool showing two tasks at Priority 1</caption>
+        </figure>
+      </para>
+      <para id="id1165438424874">
+        <figure id="id1165437551542">
+          <media id="id1165437551542_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics4-1c2e.png" id="id1165437551542__onlineimage" height="393" width="367"/>
+          </media>
+          <caption>Function name for the Task</caption>
+        </figure>
+      </para>
+      <para id="id1165442127580">Then the <code display="inline">main.c</code> file will need two functions <code display="inline">funTSK0</code> and <code display="inline">funTSK1</code> as shown in the following listing.</para>
+      <code id="id1165441278782" display="block">#include &lt;std.h&gt;
+    #include &lt;log.h&gt;
+    #include &lt;tsk.h&gt;
+    #include "tskcfg.h"
+    
+    Void main()
+    {
+    }
+    
+    Void funTSK0()
+    {
+    LOG_printf(&amp;trace, "TSK0 Start");
+    TSK_yield();
+    LOG_printf(&amp;trace, "TSK0 Main");
+    TSK_yield();
+    LOG_printf(&amp;trace, "TSK0 Finish");
+    }
+    
+    Void funTSK1()
+    {
+    LOG_printf(&amp;trace, "TSK1 Start");
+    TSK_yield();
+    LOG_printf(&amp;trace, "TSK1 Main");
+    TSK_yield();
+    LOG_printf(&amp;trace, "TSK1 Finish");
+    }
+    </code>
+      <para id="id1165433834759">When the program starts, the TSK0 runs first since it is the first on the list under Priority 1. It will print one statement and then yield to another task at the same priority, which will be TSK1. TSK1 will then begin its execution. The result of the whole run is:</para>
+      <code id="id1165448635728" display="block">TSK0 Start
+    TSK1 Start
+    TSK0 Main
+    TSK1 Main
+    TSK0 Finish
+    TSK1 Finish
+    </code>
+    </section>
+    <section id="id1165457169463">
+      <title>Viewing Objects</title>
+      <para id="id1165433800376">Whe debugging a project it is important to see the characteristics of the components in your project. When using DSP/BIOS in CCS it is possible to view the DSP/BIOS objects and their properties using the RTSC Object Viewer (ROV). RTSC is Real Time Software Components which is a standard for developing software modules/libraries.</para>
+      <para id="id1165440075958">To view the DSP/BIOS v5.x objects and properties in the debug mode, select <emphasis>Tools-&gt;ROV</emphasis>. This will bring up a window that looks like the following figure.</para>
+      <figure id="id1165432913957">
+        <media id="id1165432913957_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics5-307f.png" id="id1165432913957__onlineimage" height="130" width="600"/>
+        </media>
+        <caption>RTSC Object Viewer</caption>
+      </figure>
+      <para id="id1165433917526">This figure shows the TSK module and the two tasks in the project. Notice the different properties that can be seen for each task.</para>
+    </section>
+  </content>
+</document>

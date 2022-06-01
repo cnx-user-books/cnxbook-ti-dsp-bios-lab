@@ -1,0 +1,263 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Code Composer Studio v4 DSP/BIOS Project</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36660</md:content-id>
+  <md:title>Code Composer Studio v4 DSP/BIOS Project</md:title>
+  <md:abstract>This module describes the process of creating, building and debugging a Code Composer Studio (CCS) v4 DSP/BIOS based program project.</md:abstract>
+  <md:uuid>6f5bbada-45ec-4d6e-8cf5-91fc93a0fcea</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1874732">
+      <title>Introduction</title>
+      <para id="id1169235247249">This module describes how to create a Code Composer Studio (CCS) project that executes a simple DSP/BIOS based program. The target will be the TI simulator and the processor used is the TMS320C67xx.</para>
+    </section>
+    <section id="id1169230800007">
+      <title>Create a DSP/BIOS CCS project</title>
+      <para id="id2269411">To create a CCS project select <emphasis>File-&gt;New-&gt;CCS Project</emphasis>.</para>
+      <figure id="id1169238604052">
+        <media id="id1169238604052_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics1-e784.png" id="id1169238604052__onlineimage" height="281" width="600"/>
+        </media>
+        <caption>Screenshot of CCS Project menu</caption>
+      </figure>
+      <para id="id1169244820411">This will bring up a window where you can enter the name of the project. The location selected is the default location for project files. Press <emphasis>Next</emphasis>. </para>
+      <para id="id1169234400681">
+        <figure id="id1169231519771">
+          <media id="id1169231519771_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics2-df86.png" id="id1169231519771__onlineimage" height="448" width="553"/>
+          </media>
+          <caption>CCS Project name and location</caption>
+        </figure>
+      </para>
+      <para id="id1169235501582">Since the example uses the TMS320C67xx processor the project type selected is <emphasis>C6000</emphasis>. The project configurations are <emphasis>Debug</emphasis> and <emphasis>Release</emphasis>. Select the <emphasis>Next</emphasis> button.</para>
+      <para id="id1169244811958">
+        <figure id="id1169243600249">
+          <media id="id1169243600249_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics3-94ba.png" id="id1169243600249__onlineimage" height="445" width="549"/>
+          </media>
+          <caption>Type of CCS project</caption>
+        </figure>
+      </para>
+      <para id="id1169243077364">If there are any project dependencies they are selected on the next screen. Select the <emphasis>Next</emphasis> button.</para>
+      <para id="id2294546">
+        <figure id="id1169231543848">
+          <media id="id1169231543848_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics4-c4bd.png" id="id1169231543848__onlineimage" height="444" width="545"/>
+          </media>
+          <caption>CCS Project dependencies</caption>
+        </figure>
+      </para>
+      <para id="id1169231382430">On the <emphasis>Project Settings Screen</emphasis>, select the items that pertain to the type of project to be created. Since the project will be executed select <emphasis>Output Type: Executable</emphasis>. The processor type is TMS320C67xx so the <emphasis>Device Variant</emphasis> is <emphasis>Generic C67xx Device</emphasis>. This project will use <emphasis>Little Endian</emphasis>. The code generation tools are the latest version (in this case TI v7.0.3). The runtime support library is selected to match the device variant and the endianness selected. The library can be selected automatically. Press <emphasis>Next</emphasis>.</para>
+      <para id="id1169242656557">
+        <figure id="id1169239939923">
+          <media id="id1169239939923_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics5-258f.png" id="id1169239939923__onlineimage" height="466" width="479"/>
+          </media>
+          <caption>Project settings window</caption>
+        </figure>
+      </para>
+      <para id="id1169232746957">Since the project will be based on DSP/BIOS an empty DSP/BIOS example project. This will set up project parameters for DSP/BIOS.</para>
+      <figure id="id1169253697702">
+        <media id="id1169253697702_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics6-badf.png" id="id1169253697702__onlineimage" height="375" width="468"/>
+        </media>
+        <caption/>
+      </figure>
+      <para id="id1169231706799">After the projects settings have been set, select <emphasis>Finish</emphasis> and the project will show up in the <emphasis>C/C++ Projects</emphasis> view.</para>
+      <figure id="id1169235215749">
+        <media id="id1169235215749_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics7-8942.png" id="id1169235215749__onlineimage" height="203" width="365"/>
+        </media>
+        <caption>C/C++ projects view</caption>
+      </figure>
+    </section>
+    <section id="id1169237364825">
+      <title>Add a DSP/BIOS configuration file</title>
+      <para id="id1169240118151">The easiest way to set up DSP/BIOS in a CCS project is to use the DSP/BIOS configuration tool. This generates a file with a .tcf extension that is included in the project. This file will generate code that gets included in the project for setting up DSP/BIOS. It also generates a header file that can be included in other C/C++ files. For the file name <emphasis>dspbiosproject.tcf</emphasis> the header file name will be <emphasis>dspbiosprojectcfg.h</emphasis>.</para>
+      <para id="id1169259252128">To create a DSP/BIOS configuration file, select <emphasis>File-&gt;New-&gt;DSP/BIOS v5.xx Configuration File</emphasis> (you may need to select <emphasis>File-&gt;New-&gt;Other</emphasis> first, then select <emphasis>DSP/BIOS v5.xx Configuration File</emphasis>). This will bring up a dialog where the name of the file is entered.</para>
+      <figure id="id1169252532690">
+        <media id="id1169252532690_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics8-a67b.png" id="id1169252532690__onlineimage" height="186" width="599"/>
+        </media>
+        <caption>DSP/BIOS Configuration file name</caption>
+      </figure>
+      <para id="id1169231773418">There are default configuration files for different devices. For this example the C67xx simulator is used. The configuration will have 16Mbytes of SDRAM in the memory section. Select <emphasis>Next</emphasis> and a dialog for the DSP/BIOS features will come up.</para>
+      <para id="id1169231588551">
+        <figure id="id1932185">
+          <media id="id1932185_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics9-3e3f.png" id="id1932185__onlineimage" height="261" width="600"/>
+          </media>
+          <caption>DSP/BIOS platform for default settings</caption>
+        </figure>
+      </para>
+      <figure id="id1169242371214">
+        <media id="id1169242371214_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics10-aafc.png" id="id1169242371214__onlineimage" height="210" width="265"/>
+        </media>
+        <caption>DSP/BIOS features selection</caption>
+      </figure>
+      <para id="id2728819">Select <emphasis>Finish</emphasis> and a new file is created with the default configuration and is added to the project and the configuration tool is opened.</para>
+      <figure id="id1169253752080">
+        <media id="id1169253752080_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics11-d70b.png" id="id1169253752080__onlineimage" height="273" width="600"/>
+        </media>
+        <caption>DSP/BIOS configuration tool</caption>
+      </figure>
+      <para id="id1169246041846">In the configuration tool is where the DSP/BIOS objects are set up. In this example there are only two objects that will be set up. The first is a trace log that is common to many DSP/BIOS projects. The second is a task object that will be used to print to the log.</para>
+      <para id="id1169235056008">To set up the LOG object, expand the Instrumentation item and right click on the LOG item. Select Insert LOG and give the LOG object the name <emphasis>trace</emphasis>.</para>
+      <figure id="id1169235143562">
+        <media id="id1169235143562_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics12-304e.png" id="id1169235143562__onlineimage" height="478" width="384"/>
+        </media>
+        <caption>Insert LOG menu item</caption>
+      </figure>
+      <figure id="id1169232100119">
+        <media id="id1169232100119_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics13-ebf1.png" id="id1169232100119__onlineimage" height="347" width="478"/>
+        </media>
+        <caption/>
+      </figure>
+      <figure id="id1169232848797">
+        <media id="id1169232848797_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics14-3ae9.png" id="id1169232848797__onlineimage" height="296" width="546"/>
+        </media>
+        <caption>DSP/BIOS configuration tool showing the trace LOG object</caption>
+      </figure>
+      <para id="id1169236313279">Next insert a task (TSK) object and give it the name <emphasis>TSK0</emphasis>. </para>
+      <para id="id1169232781815">
+        <figure id="id1169231869709">
+          <media id="id1169231869709_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics15-2cb1.png" id="id1169231869709__onlineimage" height="536" width="548"/>
+          </media>
+          <caption>Inserting a TSK object</caption>
+        </figure>
+      </para>
+      <para id="id2982328">
+        <figure id="id1774212">
+          <media id="id1774212_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics16.png" id="id1774212__onlineimage" height="440" width="528"/>
+          </media>
+          <caption>TSK object</caption>
+        </figure>
+      </para>
+      <para id="id1169229234889">In order for the TSK object to be associated with a function the Task function name must be changed. Right click on the <emphasis>TSK0</emphasis> object and select <emphasis>Properties</emphasis>. Under the Function tab, type <code display="inline">_funTSK0</code>. Be sure to include the underscore at the beginning of the name. The C program function name will be <code display="inline">funTSK0</code> but the assembly code name will have an underscore at the beginning. Be sure to note that the name of the task object and the name of the function that it uses cannot be the same name. In this example the object name is TSK0 and the function name if <code display="inline">funTSK0</code>.</para>
+      <para id="id1169244709710">After the objects have been set up, save and close the configuration file.</para>
+      <para id="id1169245845956">When your project gets built, the configuration file automatically generates files. One of these files is a header file that can be used in your programs. If your configuration file is named <code display="inline">file.tcf</code> then the header file that gets made will be called <code display="inline">filecfg.h</code>. In the source files that use the DSP/BIOS object this header file can be included. Use a statement like:</para>
+      <code id="id1169245921389" display="block">#include "filecfg.h"
+    </code>
+    </section>
+    <section id="id1169243664998">
+      <title>Add code files</title>
+      <para id="id1169245443086">When using DSP/BIOS in a project, very little code is in the <code display="inline">main</code> function. Other objects are used like tasks and interrupts. In this example a simple task will be made that prints to a LOG buffer. Create a new C program file. Select <emphasis>File-&gt;New-&gt;Source File</emphasis>.</para>
+      <para id="id5691290">
+        <figure id="id1169229272186">
+          <media id="id1169229272186_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics17.png" id="id1169229272186__onlineimage" height="277" width="600"/>
+          </media>
+          <caption>New source file</caption>
+        </figure>
+      </para>
+      <para id="id1169246013276">The <emphasis>New Source File</emphasis> dialog opens and you can enter the source file name. Add a <emphasis>.c</emphasis> extension for a C program file. The source folder should be the folder of your project. Select <emphasis>Finish</emphasis> and a new file is opened.</para>
+      <figure id="id1169247249718">
+        <media id="id1169247249718_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics18.png" id="id1169247249718__onlineimage" height="446" width="548"/>
+        </media>
+        <caption>New source file dialog</caption>
+      </figure>
+      <para id="id5318513">Enter the C code. The file must contain a <emphasis>main</emphasis> function. After entering the code, save the file.</para>
+      <code id="id1169248249030" display="block">#include &lt;std.h&gt;
+    #include &lt;log.h&gt;
+    #include &lt;tsk.h&gt;
+    #include "dspbiosprojectcfg.h" //header generated by dspbiosproject.tcf
+    
+    void main(void){
+    LOG_printf(&amp;trace,"In main function");
+    return;
+    }
+    
+    void funTSK0(void){
+    LOG_printf(&amp;trace,"In TSK0");
+    return;
+    }
+    </code>
+      <para id="id1169244096365">In the code above, note that the header file <emphasis>dspbiosprojectcfg.h</emphasis> is included. This is the header file generated by the DSP/BIOS configuration file. Also, the function <code display="inline">funTSK0</code> is the function that will be executed when TSK0 gets scheduled to run.</para>
+    </section>
+    <section id="id1169253850281">
+      <title>Create a target configuration</title>
+      <para id="id3181706">In order to build and run your project you need to have a target configuration. This file will contain information about the emulator that will be used and the target processor. In this module the target configuration will be the TI simulator for the C6713 processor.</para>
+      <para id="id1169237247595">First select <emphasis>File-&gt;New-&gt;Target Configuration File</emphasis>. </para>
+      <figure id="id1169239681795">
+        <media id="id1169239681795_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics19.png" id="id1169239681795__onlineimage" height="277" width="600"/>
+        </media>
+        <caption>Open new target configuration file</caption>
+      </figure>
+      <para id="id1169245398989">In the New Target Configuration dialog enter the configuration file name ending in the <emphasis>.ccxml</emphasis> file extension. Put the file in the project directory. Select <emphasis>Finish</emphasis> and a new target configuration file opens.</para>
+      <para id="id1169259247626">
+        <figure id="id1169243720622">
+          <media id="id1169243720622_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics20.png" id="id1169243720622__onlineimage" height="257" width="552"/>
+          </media>
+          <caption>Target configuration dialog</caption>
+        </figure>
+      </para>
+      <para id="id1169231847616">In the target configuration, select the connection needed (simulator or some type of emulator, etc.) and the type of device. In this example the TI simulator is used with the C6713 little endian simulator device. Select <emphasis>Save</emphasis> when done.</para>
+      <figure id="id1169245449502">
+        <media id="id1169245449502_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics21.png" id="id1169245449502__onlineimage" height="523" width="485"/>
+        </media>
+        <caption>Target configuration setup</caption>
+      </figure>
+      <para id="id1169241966406">Now the target configuration is in the project.</para>
+      <para id="id1169243698027">
+        <figure id="id1169246982865">
+          <media id="id1169246982865_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics22.png" id="id1169246982865__onlineimage" height="205" width="397"/>
+          </media>
+          <caption>Project files</caption>
+        </figure>
+      </para>
+    </section>
+    <section id="id1169253844528">
+      <title>Debug the project</title>
+      <para id="id1169255354946">To start a debug session either select <emphasis>Target-&gt;Debug Active Project</emphasis> or press the debug icon in the menu bar.</para>
+      <figure id="id1169238605560">
+        <media id="id1169238605560_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics23.png" id="id1169238605560__onlineimage" height="38" width="75"/>
+        </media>
+        <caption>Debug icon</caption>
+      </figure>
+      <para id="id1169235560913">When the debug session starts the code files are compiled and linked into an executable file and the file is loaded onto the target. The initialization code is executed and the program is halted at the beginning of the <code display="inline">main</code> function.</para>
+      <figure id="id1169236087700">
+        <media id="id1169236087700_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics24.png" id="id1169236087700__onlineimage" height="297" width="478"/>
+        </media>
+        <caption>Debugging session</caption>
+      </figure>
+      <para id="id1169241464455">In order to be able to see the LOG print text the real time analysis (RTA) data stream must be turned on. Select <emphasis>Tools-&gt;RTA-&gt;Print Logs</emphasis> which will open up the LOG print window. Select the <emphasis>Stream RTA data</emphasis> button on the right part of the menu bar. The icon is depressed in the figure.</para>
+      <para id="id1169243601163">
+        <figure id="id1169231628582">
+          <media id="id1169231628582_media" alt="">
+            <image mime-type="image/png" src="../../media/graphics25.png" id="id1169231628582__onlineimage" height="147" width="457"/>
+          </media>
+          <caption>Turn on the RTA data stream</caption>
+        </figure>
+      </para>
+      <para id="id1169239973584">Icons on the debug window can be used to run the program and other debugging tools.</para>
+      <figure id="id1169255016232">
+        <media id="id1169255016232_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics26.png" id="id1169255016232__onlineimage" height="33" width="358"/>
+        </media>
+        <caption>Debugging tools</caption>
+      </figure>
+      <para id="id1169229271900">Press the green arrow to run the program. The <code display="inline">main</code> function will be executed and the program will leave the <code display="inline">main</code> function. After the <code display="inline">main</code> function executes the <emphasis>TSK0</emphasis> object is schedule and the<code display="inline"> tsk0</code> function is executed. Both functions print to the <emphasis>trace</emphasis> LOG object. The output can be viewed in the <emphasis>Printf Logs</emphasis> window.</para>
+      <figure id="id1169232187754">
+        <media id="id1169232187754_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics27.png" id="id1169232187754__onlineimage" height="154" width="456"/>
+        </media>
+        <caption>Printf Logs output window</caption>
+      </figure>
+    </section>
+  </content>
+</document>

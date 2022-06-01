@@ -1,0 +1,133 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Microsoft Visual Basic Delegates</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37100</md:content-id>
+  <md:title>Microsoft Visual Basic Delegates</md:title>
+  <md:abstract>This module describes the very basics of delegates in Microsoft Visual Basic.</md:abstract>
+  <md:uuid>0e869352-228f-421c-abb2-6fdb9ba3f8c3</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1165429904240">
+      <title>Introduction</title>
+      <para id="id1165412292768">When developing Visual Basic applications in a multithreaded invironment it may be necessary for a thread to access a GUI object in the form thread. However it is not possible for the thread to access the object directly so it must us a delegate that runs in the thread that handles the GUI object. This module describes the very basics of how to use delegate methods so that more than one thread may access a GUI object.</para>
+    </section>
+    <section id="id1165414384492">
+      <title>Reading</title>
+      <list id="id1165420787916" list-type="bulleted">
+        <item>Delegate Class: <link url="http://msdn.microsoft.com/en-us/library/system.delegate.aspx">http://msdn.microsoft.com/en-us/library/system.delegate.aspx</link></item>
+        <item>Control Class: <link url="http://msdn.microsoft.com/en-us/library/system.windows.forms.control.aspx">http://msdn.microsoft.com/en-us/library/system.windows.forms.control.aspx</link></item>
+        <item>Control Class Invoke method: <link url="http://msdn.microsoft.com/en-us/library/zyzhdc6b.aspx">http://msdn.microsoft.com/en-us/library/zyzhdc6b.aspx</link></item>
+      </list>
+    </section>
+    <section id="id1165415737903">
+      <title>Background</title>
+      <para id="id1165406261215">When a simple Visual Basic (VB) GUI application is made, there is a form class that handles all the GUI controls. This form class is a thread that handles all the interaction with the controls. It is possible to have other threads in our application. However, it is not possible for the other threads to have direct access to the GUI controls. The reason for this is it could be possible for the form thread and the other thread to try and change the same control at the same time.</para>
+      <para id="id1165422663663">To fix the problem of accessing the same control from two threads, a delegate function is made in the thread that handles the control object. The delegate function is invoked by other threads and the delegate function operates in the thread that handles the control object.</para>
+      <para id="id1165404849194">From the MSDN: "Delegates are similar to function pointers in C or C++ languages. Delegates encapsulate a reference to a method inside a delegate object. The delegate object can then be passed to code that calls the referenced method, and the method to be invoked can be unknown at compile time. Unlike function pointers in C or C++, delegates are object-oriented, type-safe, and more secure."</para>
+      <para id="id1165414492660">"The Delegate Class represents a delegate, which is a data structure that refers to a static method or to a class instance and an instance method of that class."</para>
+    </section>
+    <section id="id1165414821005">
+      <title>Visual Basic Delegates</title>
+      <para id="id1165404775105">Suppose you have a TextBox control object in your Form called <code display="inline">TextBox1</code>. You can change the text in the TextBox by issuing a command like this:</para>
+      <code id="id1165405164601" display="block">TextBox1.Text = "New Text In Text Box"
+    </code>
+      <para id="id1165404866407">This will change the Text property of the TextBox control object. When this is done within the Form thread everything works as expected. For instance, suppose you have a button in your Form called <code display="inline">Button1</code>. Then in the click method for that button you could have something like this:</para>
+      <code id="id1165409684799" display="block">Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+    TextBox1.Text = "I just got clicked"
+    End Sub
+    </code>
+      <para id="id1165426211783">This would all take place within the Form thread. The Form thread is the thread that created the TextBox control and the Button control so this is all within the same thread.</para>
+      <para id="id1165404951011">Suppose now you have a thread that you started that runs separate from the Form thread. If the thread tries to change the TextBox object you will get an error. If the thread looked like the following code, there would be a problem.</para>
+      <code id="id1165404925736" display="block">Private Sub Task1()
+    TextBox1.Text = "Task Text"
+    End Sub
+    </code>
+      <para id="id1165413752133">The problem occurs because the thread Task1 is running separate from the Form thread so the Form thread and the Task1 thread could change the TextBox object at the same time.</para>
+      <para id="id1165404863530">To fix this problem you can use a Delegate that points to a function that runs in the Form thread. Suppose the code was changed to the following:</para>
+      <code id="id1165415911693" display="block">' This defines a delegate subroutine that takes an integer as its input
+    Delegate Sub InvokeDelegate(ByVal myStr As String)
+    ' This makes an instance of the delegate that points to the address
+    ' of the InvokeMethod function. When the delegate is invoked it will
+    ' run the InvokeMethod method on the thread that owns the window handle.
+    Dim IDel As New InvokeDelegate(AddressOf InvokeMethod)
+    
+    Private Sub Task1()
+    ' The Invoke method executes the specified
+    ' delegate on the thread that owns the control's
+    ' underlying window handle
+    TextBox1.Invoke(IDel, "Task Text")
+    End Sub
+    
+    Public Sub InvokeMethod(ByVal myStr As String)
+    TextBox1.Text = myStr
+    End Sub
+    </code>
+      <para id="id1165406377831">This code section does not contain the whole program since it doesn't show starting the Task1 thread, etc. Lets look at the code one line at a time.</para>
+      <code id="id1165422945069" display="block">Delegate Sub InvokeDelegate(ByVal myStr As String)
+    </code>
+      <para id="id1165415801673">This line defines a delegate that will have one parameter on its input and that parameter will be passed by value and is a string. The delegate type is called <code display="inline">InvokeDelegate</code>. The name of the delegate type can be anything.</para>
+      <code id="id1165405274737" display="block">Dim IDel As New InvokeDelegate(AddressOf InvokeMethod)
+    </code>
+      <para id="id1165410373588"/>
+      <para id="id1165412401144">This line creates an instance of the delegate type defined above (<code display="inline">InvokeDelegate</code>). The method or function it uses for the instance is the static method <code display="inline">InvokeMethod</code> which is defined later in the code. This means that <code display="inline">IDel</code> is an instance of a delegate and the instance is a static method defined by <code display="inline">InvokeMethod</code>. When <code display="inline">IDel</code> is used it will execute an <code display="inline">InvokeMethod</code> method.</para>
+      <code id="id1165429915934" display="block">TextBox1.Invoke(IDel, "Task Text")
+    </code>
+      <para id="id1165410375031">Control objects have a method called <code display="inline">Invoke</code>. This method will execute a delegate on the thread that created the object. So, we first create a delegate <code display="inline">IDel</code> and then when the <code display="inline">Invoke method</code> is called for the TextBox1 object, the <code display="inline">IDel</code> delegate gets executed on the thread that created the TextBox1 control. This thread happens to be the Form thread. The <code display="inline">Invoke</code> method will not continue until the delegate completes.</para>
+      <para id="id1165404924304">If you don't want the calling thread to wait for the delegate to finish you can use the control method <code display="inline">BeginInvoke</code>.</para>
+      <code id="id1165404857003" display="block">Public Sub InvokeMethod(ByVal myStr As String)
+    TextBox1.Text = myStr
+    End Sub
+    </code>
+      <para id="id1165415391144">This is the method that is used for the delegate. Notice that it has the same input as defined above (a string input passed by value). The method simply takes the input string and assigns it to the <code display="inline">TextBox1.Text</code> property.</para>
+    </section>
+    <section id="id6490443">
+      <title>Example</title>
+      <para id="id1165407286122">In this simple example there will be a Form that contains a TextBox. Also, a thread will be started that periodically writes to the TextBox. The TexBox is created by the Form thread and while the Form is running you can enter text into the TextBox. However, periodically the other thread will write to the TextBox and clear anything that has been typed into it.</para>
+      <para id="id1165416046138">Since the thread is seperate from the Form thread, there needs to be a delegate that the thread uses to write to the TextBox. </para>
+      <code id="id1165428850574" display="block">Imports System.Threading
+    
+    Public Class Form1
+    ' This defines the thread that will run method ThreadMethod
+    Dim thread As New Thread(AddressOf ThreadMethod)
+    ' This defines a delegate type that takes an integer as its input.
+    ' The delegate type is named DelegateType.
+    Delegate Sub DelegateType(ByVal myStr As String)
+    ' This makes an instance of the delegate type that points to the address
+    ' of the DelegateMethod method. When the delegate is invoked it will
+    ' run the InvokeMethod method on the thread that owns the window handle.
+    Dim IDel As New DelegateType(AddressOf DelegateMethod)
+    
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    ' When the form loads the other thread will be set up and started
+    ' Make this thread a background thread so it automatically
+    ' aborts when the main program stops.
+    thread.IsBackground = True
+    ' Set the thread priority to lowest
+    thread.Priority = ThreadPriority.Lowest
+    ' Start the thread
+    thread.Start()
+    End Sub
+    
+    ' This method is the thread that runs separate from the Form1 thread.
+    ' It continues to run and every 5 seconds it invokes the delegate that
+    ' runs in the Form1 thread.
+    Private Sub ThreadMethod()
+    ' The Invoke method executes the specified
+    ' delegate on the thread that owns the control's
+    ' underlying window handle
+    While 1
+    Thread.Sleep(5000)
+    TextBox1.Invoke(IDel, "Task Text")
+    End While
+    End Sub
+    
+    ' This method runs in the Form1 thread
+    Public Sub DelegateMethod(ByVal myStr As String)
+    TextBox1.Text = myStr
+    End Sub
+    End Class
+    </code>
+    </section>
+  </content>
+</document>

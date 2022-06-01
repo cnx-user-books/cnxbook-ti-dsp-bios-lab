@@ -1,0 +1,112 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Microsoft Visual Basic Queue Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37103</md:content-id>
+  <md:title>Microsoft Visual Basic Queue Lab</md:title>
+  <md:abstract>The module is a lab assignment to help you better understand the very basics of Microsoft Visual Basic queues.</md:abstract>
+  <md:uuid>7a1927e7-8cd0-44f7-a422-d79855b17f12</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1166101832651">
+      <title>Introduction</title>
+      <para id="id1166086627513">This lab module will help you become familiar with the basics of queues in Microsoft Visual Basic. The exercises are written assuming you are using Visual Basic 2005 and the .NET Framework version 2.0 (or later). Some older versions will work the same, but you may need to figure out some differences. It should work with newer version also.</para>
+    </section>
+    <section id="id1166093651205">
+      <title>Module Prerequisites</title>
+      <para id="id1166097700964">You should complete the Visual Basic Threads and Semaphores lab before this one.</para>
+    </section>
+    <section id="id1166101289777">
+      <title>Labratory</title>
+      <section id="id1166091943828">
+        <title>Part 1</title>
+        <list id="id1166091351754" list-type="bulleted">
+          <item>In this part you will just put some items on a queue and then take them off and print them.</item>
+          <item>Start up Visual Studio and create a new Visual Basic project.</item>
+          <item>In the Form1 class make a queue variable and then a synchronized queue.</item>
+          <item>In the <code display="inline">Form1_Load</code> method put the following objects on the queue:</item>
+        </list>
+        <list id="id1166099385238" list-type="enumerated" number-style="arabic">
+          <item>The string "Hello"</item>
+          <item>The string "World"</item>
+          <item>The number 23</item>
+          <item>The string "Twenty Three"</item>
+        </list>
+        <list id="id1166090412987" list-type="bulleted">
+          <item>Now make a for loop that iterates using the <code display="inline">Count</code> property of the queue.</item>
+          <item>Inside the loop, dequeue items from the queue and print them to the console.</item>
+          <item>Run your program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1166093934530">
+        <title>Part 2</title>
+        <list id="id1166093852053" list-type="bulleted">
+          <item>In this part you will create two threads where one thread will write to a queue and the other will take the items off and print them. No synchronization will be done in this part. The reading thread will need to keep checking to see if there is anything on the queue.</item>
+          <item>Start up Visual Studio and create a new Visual Basic project.</item>
+          <item>In the Form1 class make a queue variable and then a synchronized queue. Use the synchronized queue.</item>
+          <item>Make two threads in the Form1 class and start them up in the <code display="inline">Form1_Load</code> method.</item>
+          <item>In the method for the first thread:</item>
+        </list>
+        <list id="id6456668" list-type="enumerated" number-style="arabic">
+          <item>make a counter variable</item>
+          <item>make a loop that loops forever</item>
+          <item>in the loop increment the counter</item>
+          <item>in the loop put the counter value on the queue</item>
+        </list>
+        <list id="id1883370" list-type="bulleted">
+          <item>In the method for the second thread:</item>
+        </list>
+        <list id="id1166091710759" list-type="enumerated" number-style="arabic">
+          <item>make a loop that loops forever</item>
+          <item>in the loop make an if statement that checks the count property of the queue </item>
+          <item>if the count value is not zero, take an element off the queue and print it</item>
+          <item>if the count value is zero, print a statement that says there was nothing on the queue</item>
+        </list>
+        <list id="id1166093950673" list-type="bulleted">
+          <item>Run your program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1166096709419">
+        <title>Part 3</title>
+        <list id="id1166101084930" list-type="bulleted">
+          <item>In this part you will create two threads where one thread will write to a queue and the other will take the items off and print them. Synchronization will be done in this part. The reading thread will wait until there is something on the queue then take all the elements off and print them. The writing thread will signal the reading thread when it puts something on the queue.</item>
+          <item>Start up Visual Studio and create a new Visual Basic project.</item>
+          <item>In the Form1 class make a queue variable and then a synchronized queue. Use the synchronized queue.</item>
+          <item>In the Form1 class make an <code display="inline">AutoResetEvent</code> event variable that will be used to synchronize the two threads.</item>
+          <item>Make two threads in the Form1 class and start them up in the <code display="inline">Form1_Load</code> method.</item>
+          <item>In the method for the first thread:</item>
+        </list>
+        <list id="id9020309" list-type="enumerated" number-style="arabic">
+          <item>make a counter variable</item>
+          <item>make a loop that loops forever</item>
+          <item>in the loop: increment the counter, put the counter value on the queue, print a statement telling what was written, signal the <code display="inline">AutoResetEvent</code> event with the <code display="inline">Set</code> method</item>
+        </list>
+        <list id="id1166091892173" list-type="bulleted">
+          <item>In the method for the second thread:</item>
+        </list>
+        <list id="id1166091755571" list-type="enumerated" number-style="arabic">
+          <item>make a loop that loops forever</item>
+          <item>in the loop print a statement saying that the task is about to wait</item>
+          <item>have the thread wait for the <code display="inline">AutoResetEvent</code> event by calling the <code display="inline">WaitOne</code> method</item>
+          <item>after the <code display="inline">WaitOne</code> call, make another while loop that keeps removing items from the queue as long as the count is greater than zero</item>
+          <item>print the value of the element taken off the queue to the console</item>
+        </list>
+        <list id="id1166096476131" list-type="bulleted">
+          <item>Run your program and record the results.</item>
+        </list>
+      </section>
+      <section id="id1166092081427">
+        <title>Part 4</title>
+        <list id="id1166091719523" list-type="bulleted">
+          <item>This uses the code from the previous part.</item>
+          <item>After writing the value to the queue, have the first thread sleep for 100 ms using the command</item>
+        </list>
+        <code id="id1166090423213" display="block">Thread.Sleep(100)
+    </code>
+        <list id="id1166097366488" list-type="bulleted">
+          <item>Run your program and record the results.</item>
+        </list>
+      </section>
+    </section>
+  </content>
+</document>

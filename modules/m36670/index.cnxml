@@ -1,0 +1,64 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>LOG Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36670</md:content-id>
+  <md:title>LOG Lab</md:title>
+  <md:abstract>The module is a lab assignment to better understand the TI DSP/BIOS LOG module.</md:abstract>
+  <md:uuid>c9beb142-2b13-4975-87fb-25288f139f1d</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1171909703947">
+      <title>Introduction</title>
+      <para id="id1171907981568">This lab module will help you become familiar with TI DSP/BIOS LOG module and its use.</para>
+    </section>
+    <section id="id1171913334164">
+      <title>Reading</title>
+      <list id="id1171923499485" list-type="bulleted">
+        <item>SPRU423 TMS320 DSP/BIOS Users Guide: Read the section Event Log Manager (LOG Module)</item>
+      </list>
+    </section>
+    <section id="id1171921487503">
+      <title>Lab Module Prerequisites</title>
+      <para id="id1171920493946">None</para>
+    </section>
+    <section id="id1171914099503">
+      <title>Laboratory</title>
+      <list id="id1171908751276" list-type="bulleted">
+        <item>Follow the procedure in <link document="m36660">Code Composer Studio v4 DSP/BIOS Project</link> to create a new CCS DSP/BIOS project. Name the project <code display="inline">loglab</code>. Your project should have a DSP/BIOS configuration file named <code display="inline">loglab.tcf</code>.</item>
+        <item>Create a LOG object called <code display="inline">trace</code>. Use the default length of 64 and the logtype circular.</item>
+        <item>Add a task to the configuration. This is part of the TSK module but you don't need to know about the module to be able to do this lab. Add a task by right clicking on <emphasis>Scheduling-&gt;TSK</emphasis> and selecting <emphasis>Insert TSK</emphasis>. A new task should be added called <code display="inline">TSK0</code>.</item>
+        <item>Specify the function the task will run by right clicking on <code display="inline">TSK0</code> and bringing up its properties. On the Function tab next to Task Function type in the function name <code display="inline">_logTSK</code>. This will specify the C function <code display="inline">logTSK</code> as the function it will call.</item>
+        <item>Create a <code display="inline">main.c</code> file and include a main function that does nothing and a function <code display="inline">logTSK</code>. The main structure of the file is</item>
+      </list>
+      <code id="id1171908532736" display="block">#include &lt;std.h&gt;
+    #include &lt;log.h&gt;
+    #include &lt;tsk.h&gt;
+    #include "loglabcfg.h"
+    
+    main()
+    {
+    }
+    
+    logTSK()
+    {
+    /* your code here */
+    }
+    </code>
+      <list id="id1171923836591" list-type="bulleted">
+        <item>Write a loop in the <code display="inline">logTSK</code> function that loops 20 times and writes some text indicating that the loop number is being printed and print the loop number. For instance, have it print</item>
+      </list>
+      <code id="id1171907867009" display="block">Loop Number 0
+    Loop Number 1
+    Loop Number 2
+    ...
+    </code>
+      <list id="id1171906493036" list-type="bulleted">
+        <item>Start the debug session. </item>
+        <item>Open the log view by selecting <emphasis>Tools-&gt;RTA-&gt;Printf Logs</emphasis>.</item>
+        <item>Run the program and record the results.</item>
+      </list>
+      <para id="id1171907766009"/>
+    </section>
+  </content>
+</document>

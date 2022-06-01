@@ -1,0 +1,88 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Microsoft Visual Basic Delegate Lab</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m37102</md:content-id>
+  <md:title>Microsoft Visual Basic Delegate Lab</md:title>
+  <md:abstract>The module is a lab assignment to help you better understand the very basics of Microsoft Visual Basic delegates.</md:abstract>
+  <md:uuid>081ca863-8f5c-43f7-8ded-d6967e650a05</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1166089434570">
+      <title>Introduction</title>
+      <para id="id1166096633769">This lab module will help you become familiar with the basics of delegates in Microsoft Visual Basic(V). The exercises are written assuming you are using Visual Basic 2005 and the .NET Framework version 2.0 (or later). Some older versions will work the same, but you may need to figure out some differences. It should work with newer version also.</para>
+    </section>
+    <section id="id1166092955495">
+      <title>Module Prerequisites</title>
+      <para id="id1166103417344">You should complete the Visual Basic Threads and Semaphores lab before this one.</para>
+    </section>
+    <section id="id1166090197551">
+      <title>Labratory</title>
+      <section id="id1166094009164">
+        <title>Part 1</title>
+        <list id="id1166090203451" list-type="bulleted">
+          <item>In this part you will make a project with a thread that will try to change a TextBox text without using a delegate method. When the thread tries to change the TextBox text it won't work because the TextBox control is not handled by the thread.</item>
+          <item>Start up Visual Studio and create a new Visual Basic project.</item>
+          <item>On the GUI, put a new TextBox. By default it should have the name <code display="inline">TextBox1</code>.</item>
+          <item>Create a thread called <code display="inline">Task1</code> and start the thread in the <code display="inline">Form1_Load</code> method.</item>
+          <item>In the thread method <code display="inline">Task1</code>, assign a string to the TextBox.</item>
+          <item>Run your program and observe what happens. You should get an error when the thread tries to access the TextBox control. Record what the error says.</item>
+        </list>
+      </section>
+      <section id="id1166089445788">
+        <title>Part 2</title>
+        <list id="id1166098764060" list-type="bulleted">
+          <item>In this part we will make a delegate that will allow the thread to change the text in the TextBox.</item>
+          <item>Either start a new project or modify the one from the previous part. What you should have in your project is:</item>
+        </list>
+        <list id="id1166095753125" list-type="enumerated" number-style="arabic">
+          <item>A TextBox on the GUI with the name <code display="inline">TextBox1</code>.</item>
+          <item>A thread called <code display="inline">Task1</code> that is started in the <code display="inline">Form1_Load</code> method.</item>
+        </list>
+        <list id="id1166090095592" list-type="bulleted">
+          <item>Add commands to define a delegate type and an instance of a delegate. If you want to use the names shown here you can. These statements should be right under the beginning of the Form1 class (right after "<code display="inline">Public Class Form1</code>").</item>
+        </list>
+        <code id="id1166086509885" display="block">Delegate Sub DelegateType(ByVal myStr As String)
+    Dim IDel As New DelegateType(AddressOf DelegateMethod)
+    </code>
+        <list id="id1166101407806" list-type="bulleted">
+          <item>Make a new <code display="inline">DelegateMethod</code> method that takes a string as an input and uses it to change the text of the TextBox.</item>
+          <item>In the <code display="inline">Task1</code> method, use the <code display="inline">TextBox1</code> to invoke the delegate method. Have it write the text <code display="inline">"Task Text"</code> to the TextBox.</item>
+          <item>Run your program and observe that the text <code display="inline">"Task Text"</code> gets written to the TextBox.</item>
+        </list>
+      </section>
+      <section id="id1166094051432">
+        <title>Part 3</title>
+        <list id="id1166093640624" list-type="bulleted">
+          <item>In this part we will make a simple clock. All we will do is continuously get the current time and write it to the TextBox.</item>
+          <item>In this part we will have everything that is in the previous part so you can start where it left off. Your project should have:</item>
+        </list>
+        <list id="id1166091280553" list-type="enumerated" number-style="arabic">
+          <item>A TextBox on the GUI with the name <code display="inline">TextBox1</code>.</item>
+          <item>A thread that uses the <code display="inline">Task1</code> method that is started in the <code display="inline">Form1_Load</code> method.</item>
+          <item>Commands to define a delegate and an instance of a delegate.</item>
+          <item>A delegate method that writes the input string to the TextBox.</item>
+        </list>
+        <list id="id1166102371487" list-type="bulleted">
+          <item>In the thread, we will have it get the current date/time and the write it to the TextBox.</item>
+          <item>Put the following commands that will define objects to get the current date/time.</item>
+        </list>
+        <code id="id1166092975410" display="block">Dim count As Integer
+    Dim dispDt As DateTime
+    Dim datePatt As String = "M/d/yyyy hh:mm:ss tt"
+    Dim dtString As String
+    </code>
+        <list id="id1166088022889" list-type="bulleted">
+          <item>In the thread make a continuous while loop that puts the date into the string <code display="inline">dtString</code> and then sends that string to the delegate. To get the date use the command:</item>
+        </list>
+        <code id="id1166091267400" display="block">dispDt = DateTime.Now ' get the time now
+    dtString = dispDt.ToString(datePatt) ' Convert the date to a string
+    </code>
+        <list id="id1166093723372" list-type="bulleted">
+          <item>In the while loop make the thread sleep for 100 ms so that it is not doing too much processing. It will get the time/date and write it to the TextBox every 100 ms.</item>
+          <item>Run your program and observe that the text displays the date/time and that the seconds change.</item>
+        </list>
+      </section>
+    </section>
+  </content>
+</document>

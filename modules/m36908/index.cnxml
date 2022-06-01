@@ -1,0 +1,181 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>TI DSP/BIOS QUE Module</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m36908</md:content-id>
+  <md:title>TI DSP/BIOS QUE Module</md:title>
+  <md:abstract>This module describes the basics of the TI DSP/BIOS v5.x Queue (QUE) Module.</md:abstract>
+  <md:uuid>bc129126-bfd8-4a6d-8600-3f9e3be6138d</md:uuid>
+</metadata>
+
+<content>
+    <section id="id1167121427858">
+      <title>Introduction</title>
+      <para id="id1167117126935">This module describes the basics of the Queue (QUE) module in DSP/BIOS v5.x. It also shows how to use the MEM module to allocate memory for queue elements.</para>
+    </section>
+    <section id="id1167111250759">
+      <title>Reading</title>
+      <list id="id1167107114616" list-type="bulleted">
+        <item>SPRU423 TMS320 DSP/BIOS Users Guide: Read the section title Queues</item>
+        <item>SPRU403 TMS320C6000 DSP/BIOS 5.x Application Programming Interface (API) Reference Guide: Reference the sections on QUE and MEM</item>
+      </list>
+    </section>
+    <section id="id1167110029377">
+      <title>QUE Module</title>
+      <para id="id2537154">The QUE module provides a way to manage linked lists of data objects. A linked list is a group of objects where an object in the list has information about the previous and next elements in the list as demonstrated in Figure 1. A linked list can be used to implement buffers that operate in a FIFO, LIFO, LILO and FILO manner, to name a few. Many times it is used in a FIFO manner.</para>
+      <figure id="id1167105089203">
+        <media id="id1167105089203_media" alt="">
+          <image mime-type="image/png" src="../../media/graphics1-4a3b.png" id="id1167105089203__onlineimage" height="94" width="568"/>
+        </media>
+        <caption>Diagram of a linked list</caption>
+      </figure>
+      <para id="id1167129245042">The basic element in a queue structure is a <code display="inline">QUE_Elem</code> which is defined by</para>
+      <code id="id1167131862396" display="block">typedef struct QUE_Elem {
+    struct QUE_Elem *next;
+    struct QUE_Elem *prev;
+    } QUE_Elem;
+    </code>
+      <para id="id1167100876247">This definition is in the header file <code display="inline">que.h</code> which must be included in the source file.</para>
+      <para id="id1167121550323">A message or object put on a queue is a structure that has as its first element a <code display="inline">QUE_Elem</code>. The message is defined by the user's code. An example would be:</para>
+      <code id="id1167127902999" display="block">typedef struct MsgObj {
+    QUE_Elem elem; /* first field for QUE */
+    Int val; /* message value */
+    } MsgObj, *Msg;
+    </code>
+      <para id="id1167106734897">To put a message at the end of a queue use the function <code display="inline">QUE_put</code> and to remove a message from the beginning of the queue use <code display="inline">QUE_get</code>. These two functions allow the queue to be used as a First In First Out (FIFO) buffer.</para>
+      <para id="id1167100944392">Here is another example of a message structure. Notice that you can put anything else in the struture for your message as long as the QUE_Elem element is the first in the structure.</para>
+      <para id="id2312997"/>
+      <code id="id1167120695419" display="block">typedef struct MsgObj {
+    QUE_Elem elem; /* first field for QUE */
+    float array[100]; /* message array */
+    } MsgObj, *Msg;
+    </code>
+      <para id="id1167113357956">When creating messages it may be necessary to get a segment of memeory to store the message. The following code can be used to allocate memory for a message and put it on a queue.</para>
+      <code id="id1167107980538" display="block">Msg msg; // pointer to a MsgObj, this doesn't allocate memory for a message
+    
+    msg = MEM_alloc(0, sizeof(MsgObj), 0); // Allocate memory for the object
+    if (msg == MEM_ILLEGAL) {
+    SYS_abort("Memory allocation failed!\n");
+    }
+    /* fill the message with data here */
+    /* This puts the address of the message in the queue */
+    QUE_put(&amp;queue, msg);
+    </code>
+      <para id="id1167102124495">In order to use the MEM module the header file <code display="inline">mem.h</code> must be included in the source file. The <code display="inline">MEM_alloc</code> gets a segment of memory from the memory manager and returns a pointer to the segment. The address gets put into the <code display="inline">msg</code> pointer so that when we access the object it points to segment of memeory.</para>
+      <para id="id1828749"><code display="inline">QUE_put</code> puts the address of the message object on the queue. This function only copies the message pointer in order to minimize the amount of processing needed to put the message on the queue.</para>
+      <para id="id1167112062090">Before trying to get a message from a queue, the code should check to see if there is a message available on the queue. The following code makes this check and then gets the message from the queue.</para>
+      <code id="id1167119489504" display="block">if (QUE_empty(&amp;queue)) { // Check to see if the queue is empty
+    LOG_printf(&amp;trace,"queue error\n"); // Print something if it is empty
+    // If the queue is empty you probably will not want to proceed
+    }
+    msg = QUE_get(&amp;queue); // If there is a message, dequeue it
+    // use the message here
+    // After using the message, free the memory
+    // This tells MEM_free the location of the msg and size so it
+    // can remove it from memory
+    MEM_free(0, msg, sizeof(MsgObj)); // Free up the memory
+    </code>
+      <para id="id1167107359350">Functions <code display="inline">QUE_put</code> and <code display="inline">QUE_get</code> are atomic in that they add and remove elements from the queue with interrupts turned off. Therefore there should not be a problem of more than one task trying to access the queue at the same time. The function <code display="inline">QUE_get</code> is also non-blocking so the tasks should determine if there are any elements on the queue before calling <code display="inline">QUE_get</code>.</para>
+      <para id="id1167129774149">A semaphore can be used to count the number of elements on a queue and be used to block a task that needs access to a queue. Figure 2 shows how one task <code display="inline">TSK0</code> will write to a queue, <code display="inline">QUE0</code>, and the other task <code display="inline">TSK1</code> will read from the queue. Also, the semaphore <code display="inline">QUE0_SEM</code> is used to keep track of how many elements are on the queue. After <code display="inline">TSK0</code> puts a message on the queue it will call <code display="inline">SEM_post</code> and increment the semaphore. Before reading from the queue, <code display="inline">TSK1</code> will call <code display="inline">SEM_pend</code> on the semaphore and if the task does not block, there is an element on the queue. If there are no elements on the queue, the task will block on the semaphore.</para>
+      <figure id="id1167123599337">
+        <media id="id1167123599337_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics2-4d94.jpg" id="id1167123599337__onlineimage" height="108" width="227"/>
+        </media>
+        <caption>Queue and semaphore setup</caption>
+      </figure>
+      <para id="id1167111210221">For the setup with one queue and one semaphore notice that if the program ran for a long time the code would have to continually allocate memory for a message and then de-allocate it when it was done using the message. This could take up a substantial amount of time and could cause fragmentation of the memory space. A better method is to have two queues where one queue holds messages that are free and one holds messages that contain data being transmitted from one task to another. Figure 3 shows the same setup in Figure 2 except there is now a queue that contains free messages or empty messages.</para>
+      <figure id="id2272411">
+        <media id="id2272411_media" alt="">
+          <image mime-type="image/jpg" src="../../media/graphics3-e5cb.jpg" id="id2272411__onlineimage" height="189" width="227"/>
+        </media>
+        <caption>Free message queue setup</caption>
+      </figure>
+      <para id="id1167132768808">During the initialization phase of the program, memory for empty messages is allocated and the messages are put in the <code display="inline">QUE_Free</code> queue and the semaphore <code display="inline">QUE_Free_SEM</code> is incremented for each message put on the queue. When <code display="inline">TSK0</code> needs to send a message to <code display="inline">TSK1</code> it will check <code display="inline">QUE_Free_SEM</code> to see if there are any free messages. If not, it will block. If there are free messages it will take one off of <code display="inline">QUE_Free</code> after the <code display="inline">QUE_Free_SEM</code> is decremented and then fill the message with data and put it on the queue <code display="inline">QUE0</code>. The semaphore QUE0_SEM is incremented after the message is put on <code display="inline">QUE0</code>. </para>
+      <para id="id1167126660341">The task <code display="inline">TSK1</code> will block on <code display="inline">QUE0_SEM</code> until task <code display="inline">TSK1</code> puts a message on the queue. Then it will decrement the semaphore and use the message. When it is done it will put the message on <code display="inline">QUE_Free</code> and increment its semaphore.</para>
+    </section>
+    <section id="id1167112571935">
+      <title>Example</title>
+      <para id="id1167120406396">This is a very simple example to demonstrate the structure of a program that uses queues. In the example we will assume that DSP/BIOS has been set up with two tasks, TSK0 and TSK1, and one queue, QUE0. The two tasks have the same priority and TSK0 is set to execute first. The code for the example follows.</para>
+      <code id="id1167106555392" display="block">#include &lt;std.h&gt; // Target definition header
+    #include &lt;sys.h&gt; // DSP/BIOS config/error header
+    #include &lt;log.h&gt; // LOG module header
+    #include &lt;mem.h&gt; // MEM module header
+    #include &lt;que.h&gt; // QUE module header
+    #include &lt;tsk.h&gt; // TSK module header
+    
+    #include "QUE_Examplecfg.h" // header generated by QUE_Example.tcf config file
+    
+    typedef struct MsgObj {
+    QUE_Elem elem; /* first field for QUE */
+    Int val; /* message value */
+    } MsgObj, *Msg;
+    Void main()
+    {
+    }
+    // TSK0 will generate two messages and put them on the queue
+    Void funTSK0()
+    {
+    Msg msg; // Pointer to the message object
+    // allocate memory for first message
+    msg = MEM_alloc(0, sizeof(MsgObj), 0);
+    if (msg == MEM_ILLEGAL) {
+    // If the memory allocation fails, abort
+    SYS_abort("Memory allocation failed!\n");
+    }
+    msg-&gt;val = 1; // put the message number in the message
+    // print the message number 
+    LOG_printf(&amp;trace, "Writing message %d", msg-&gt;val);
+    // Put the message on the queue
+    QUE_put(&amp;QUE0, msg);
+    </code>
+      <code id="id1167112502735" display="block">// repeat for the second message
+    msg = MEM_alloc(0, sizeof(MsgObj), 0);
+    if (msg == MEM_ILLEGAL) {
+    // If the memory allocation fails, abort
+    SYS_abort("Memory allocation failed!\n");
+    }
+    msg-&gt;val = 2; // put the message number in the message
+    // print the message number 
+    LOG_printf(&amp;trace, "Writing message %d", msg-&gt;val);
+    // Put the message on the queue
+    QUE_put(&amp;QUE0, msg);
+    }
+    // TSK1 will get two messages from the queue
+    Void funTSK1()
+    {
+    Msg msg; // Pointer to the message object
+    
+    // If the queue is empty, we should not proceed
+    if (QUE_empty(&amp;QUE0)) {
+    LOG_printf(&amp;trace,"TSK1 queue error");
+    return; // This will make the task terminate
+    }
+    // Get the message off the queue
+    msg = QUE_get(&amp;QUE0);
+    // print value in the message
+    LOG_printf(&amp;trace, "Reading message %d", msg-&gt;val);
+    // Since we are done with the message, free the memory
+    MEM_free(0, msg, sizeof(MsgObj));
+    </code>
+      <code id="id1167118688218" display="block">// Repeat for the second message
+    // If the queue is empty, we should not proceed
+    if (QUE_empty(&amp;QUE0)) {
+    LOG_printf(&amp;trace,"TSK1 queue error");
+    return; // This will make the task terminate
+    }
+    // Get the message off the queue
+    msg = QUE_get(&amp;QUE0);
+    // print value in the message
+    LOG_printf(&amp;trace, "Reading message %d", msg-&gt;val);
+    // Since we are done with the message, free the memory
+    MEM_free(0, msg, sizeof(MsgObj));
+    }
+    </code>
+      <para id="id1167124977627">It is important to free the memory of each message after it is used so that the memory does not get used up. The result of the run follows.</para>
+      <code id="id1897456" display="block">Writing message 1
+    Writing message 2
+    Reading message 1
+    Reading message 2
+    </code>
+    </section>
+  </content>
+</document>
