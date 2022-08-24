@@ -1,193 +1,60 @@
-<col:collection xmlns="http://cnx.rice.edu/collxml" xmlns:md="http://cnx.rice.edu/mdml" xmlns:col="http://cnx.rice.edu/collxml" xml:lang="en" type="Course">
+<?xml version="1.0"?>
+<col:collection xmlns="http://cnx.rice.edu/collxml" xmlns:md="http://cnx.rice.edu/mdml" xmlns:col="http://cnx.rice.edu/collxml" xml:lang="en" type="Course" authors="David Waldo">
   <metadata xmlns:md="http://cnx.rice.edu/mdml" mdml-version="0.5">
-  <md:content-id>col11265</md:content-id>
-  <md:title>TI DSP/BIOS Lab</md:title>
-  
-  
-  <md:license url="http://creativecommons.org/licenses/by/3.0/"/>
-  <md:language>en</md:language>
-
-  
-
-  
-  
-  
-  
-  
-
-  <md:uuid>db06c8ae-7a1e-4752-b861-aa43d2c5ca24</md:uuid>
-<md:slug>ti-dsp-bios-lab</md:slug>
-</metadata>
-
+    <md:content-id>col11265</md:content-id>
+    <md:title>TI DSP/BIOS Lab</md:title>
+    <md:license url="http://creativecommons.org/licenses/by/3.0/"/>
+    <md:language>en</md:language>
+    <md:uuid>db06c8ae-7a1e-4752-b861-aa43d2c5ca24</md:uuid>
+    <md:slug>ti-dsp-bios-lab</md:slug>
+  </metadata>
   <col:content>
-    
-      
-        
-      <col:subcollection>
-        <md:title>Code Composer Studio Projects</md:title>
-        
-        
-        
-
-        <col:content>
-          
-    
-      <col:module document="m36660"/>
-        
-      
-    
-    
-      <col:module document="m36656"/>
-        
-      
-    
-    
-      <col:module document="m33263"/>
-        
-      
-    
-    
-      <col:module document="m36721"/>
-        
-      
-    
-        </col:content>
-      </col:subcollection>
-    
-    
-      
-        
-      <col:subcollection>
-        <md:title>Lab 1</md:title>
-        
-        
-        
-
-        <col:content>
-          
-    
-      <col:module document="m36668"/>
-        
-      
-    
-    
-      <col:module document="m36670"/>
-        
-      
-    
-        </col:content>
-      </col:subcollection>
-    
-    
-      
-        
-      <col:subcollection>
-        <md:title>Lab 2</md:title>
-        
-        
-        
-
-        <col:content>
-          
-    
-      <col:module document="m36678"/>
-        
-      
-    
-    
-      <col:module document="m36686"/>
-        
-      
-    
-    
-      <col:module document="m36695"/>
-        
-      
-    
-        </col:content>
-      </col:subcollection>
-    
-    
-      
-        
-      <col:subcollection>
-        <md:title>Lab 3</md:title>
-        
-        
-        
-
-        <col:content>
-          
-    
-      <col:module document="m36908"/>
-        
-      
-    
-    
-      <col:module document="m36842"/>
-        
-      
-    
-        </col:content>
-      </col:subcollection>
-    
-    
-      
-        
-      <col:subcollection>
-        <md:title>Lab 4</md:title>
-        
-        
-        
-
-        <col:content>
-          
-    
-      <col:module document="m37030"/>
-        
-      
-    
-    
-      <col:module document="m37075"/>
-        
-      
-    
-        </col:content>
-      </col:subcollection>
-    
-    
-      
-        
-      <col:subcollection>
-        <md:title>Lab 5</md:title>
-        
-        
-        
-
-        <col:content>
-          
-    
-      <col:module document="m37101"/>
-        
-      
-    
-    
-      <col:module document="m37100"/>
-        
-      
-    
-    
-      <col:module document="m37103"/>
-        
-      
-    
-    
-      <col:module document="m37102"/>
-        
-      
-    
-        </col:content>
-      </col:subcollection>
-    
+    <col:subcollection>
+      <md:title>Code Composer Studio Projects</md:title>
+      <col:content>
+        <col:module document="m36660"/>
+        <col:module document="m36656"/>
+        <col:module document="m33263"/>
+        <col:module document="m36721"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Lab 1</md:title>
+      <col:content>
+        <col:module document="m36668"/>
+        <col:module document="m36670"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Lab 2</md:title>
+      <col:content>
+        <col:module document="m36678"/>
+        <col:module document="m36686"/>
+        <col:module document="m36695"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Lab 3</md:title>
+      <col:content>
+        <col:module document="m36908"/>
+        <col:module document="m36842"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Lab 4</md:title>
+      <col:content>
+        <col:module document="m37030"/>
+        <col:module document="m37075"/>
+      </col:content>
+    </col:subcollection>
+    <col:subcollection>
+      <md:title>Lab 5</md:title>
+      <col:content>
+        <col:module document="m37101"/>
+        <col:module document="m37100"/>
+        <col:module document="m37103"/>
+        <col:module document="m37102"/>
+      </col:content>
+    </col:subcollection>
   </col:content>
 </col:collection>
